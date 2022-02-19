@@ -51,7 +51,7 @@ export default function RegisterShelterPersonForm() {
           </Select>
           {/* TODO: Add demographic information */}
         </Stack>
-        <Submit>Register</Submit>
+        <Submit value="Register" />
       </Box>
     </Stack>
   );

@@ -91,7 +91,7 @@ export default function PropertyOwnerForm() {
             placeholder="Desired Hourly Rate (please be considerate)"
           />
         </Stack>
-        <Submit>List Housing</Submit>
+        <Submit value="List Housing" />
       </Box>
     </Stack>
   );

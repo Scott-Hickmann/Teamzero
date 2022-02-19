@@ -1,10 +1,13 @@
-import { Button, ButtonProps } from '@chakra-ui/react';
+import { Input, InputProps } from '@chakra-ui/react';
 
-export type SubmitProps = React.PropsWithChildren<ButtonProps>;
+export interface SubmitProps extends InputProps {
+  value: string;
+}
 
-export function Submit({ children }: SubmitProps) {
+export function Submit({ value, ...props }: SubmitProps) {
   return (
-    <Button
+    <Input
+      type="submit"
       fontFamily={'heading'}
       mt={8}
       w={'full'}
@@ -14,8 +17,8 @@ export function Submit({ children }: SubmitProps) {
         bgGradient: 'linear(to-r, red.400,pink.400)',
         boxShadow: 'xl'
       }}
-    >
-      {children}
-    </Button>
+      {...props}
+      value={value}
+    />
   );
 }

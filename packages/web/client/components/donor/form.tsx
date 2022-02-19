@@ -1,11 +1,36 @@
 import { Box, Heading, HStack, Stack, Text } from '@chakra-ui/react';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 
 import { useWeb3 } from '../../hooks';
 import { Input, Select, Submit } from '../form';
 
+interface Data {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  donationCriteria: string;
+  amount: string;
+}
+
 export default function DonorForm() {
   const { account } = useWeb3();
   console.log(account);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm();
+  const [data, setData] = useState<Data | undefined>();
+
+  useEffect(() => {
+    if (!data) return;
+    console.log(data);
+    // TODO: Sign transaction then post to api
+  }, [data]);
 
   return (
     <Stack
@@ -37,24 +62,53 @@ export default function DonorForm() {
           affordable housing providers which we match to homeless people.
         </Text>
       </Stack>
-      <Box as={'form'} mt={10}>
+      <Box
+        as={'form'}
+        mt={10}
+        onSubmit={handleSubmit((data) => {
+          setData(data as Data);
+        })}
+      >
         <Stack spacing={4}>
           <HStack>
-            <Input placeholder="First Name" />
-            <Input placeholder="Last Name" />
+            <Input
+              type="text"
+              placeholder="First Name"
+              {...register('firstName', { required: true })}
+            />
+            <Input
+              type="text"
+              placeholder="Last Name"
+              {...register('lastName', { required: true })}
+            />
           </HStack>
-          <Input placeholder="email@domain.com" />
-          <Input placeholder="+1 (___) __-___-___" />
-          <Select placeholder="Donation Criteria">
+          <Input
+            type="email"
+            placeholder="email@domain.com"
+            {...register('email', { required: true })}
+          />
+          <Input
+            type="tel"
+            placeholder="+1 (___) __-___-___"
+            {...register('phoneNumber', { required: true })}
+          />
+          <Select
+            placeholder="Donation Criteria"
+            {...register('donationCriteria')}
+          >
             <option value="hasFamilyMember">Has family members</option>
             <option value="homelessSinceMoreThan3Months">
               Homeless since more than 3 months
             </option>
             <option value="hasADisability">Has a disability</option>
           </Select>
-          <Input type="number" placeholder="Amount (Crypto)" />
+          <Input
+            type="number"
+            placeholder="Amount (Crypto)"
+            {...register('amount', { required: true })}
+          />
         </Stack>
-        <Submit>Donate</Submit>
+        <Submit value="Donate" />
       </Box>
     </Stack>
   );
