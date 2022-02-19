@@ -9,10 +9,10 @@ export default withAuth(async function handler(
   userId: string
 ): Promise<void> {
   const userDoc = await UserModel.findOne({ id: userId });
-  if (!userDoc || userDoc.type !== 'shelter') {
+  if (!userDoc || userDoc.type !== 'propertyOwner') {
     res.status(200).json({ success: false, error: 'Invalid user' });
     return;
   }
-  // TODO: Get matches
+  // TODO: Accept match
   res.json({ success: true, data: {} });
 });

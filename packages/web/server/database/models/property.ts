@@ -9,7 +9,10 @@ const schema = new Schema<Property>({
   city: { type: String, required: true },
   state: { type: String, required: true },
   rooms: { type: Number, required: true },
-  hourlyRate: { type: Number, required: true }
+  hourlyRate: { type: Number, required: true },
+  hours3Rate: { type: Number, required: true },
+  hours6rate: { type: Number, required: true },
+  dayRate: { type: Number, required: true }
 });
 
 // eslint-disable-next-line @typescript-eslint/ban-types

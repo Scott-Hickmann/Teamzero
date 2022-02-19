@@ -50,6 +50,9 @@ export interface Property {
   state: string;
   rooms: number;
   hourlyRate: number;
+  hours3Rate: number;
+  hours6rate: number;
+  dayRate: number;
 }
 
 export interface Shelter {
@@ -60,4 +63,13 @@ export interface Shelter {
   zipcode: string;
   city: string;
   state: string;
+}
+
+export interface ShelterPerson {
+  id: string;
+  userId: string; // Points to user managing the shelter
+  firstName: string;
+  lastName: string;
+  email?: string;
+  criteria: Criteria[];
 }

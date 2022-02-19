@@ -11,7 +11,7 @@ export default withAuth(async function handler(
   userId: string
 ): Promise<void> {
   const userDoc = await UserModel.findOne({ id: userId });
-  if (!userDoc || !userDoc) {
+  if (!userDoc || userDoc.type !== 'donor') {
     res.status(200).json({ success: false, error: 'Invalid user' });
     return;
   }

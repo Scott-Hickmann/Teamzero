@@ -13,6 +13,6 @@ export default withAuth(async function handler(
     res.status(200).json({ success: false, error: 'Invalid user' });
     return;
   }
-  // TODO: Get matches
+  // TODO: Accept match
   res.json({ success: true, data: {} });
 });
