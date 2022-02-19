@@ -28,8 +28,10 @@ interface ILink {
 const Links: ILink[] = [
   { title: 'Home', url: '/' },
   { title: 'Donate', url: '/donor' },
-  { title: 'List Property', url: '/propertyOwner' },
-  { title: 'Register Person', url: '/shelter/registerPerson' }
+  { title: 'List Property', url: '/propertyOwner/listProperty' },
+  { title: 'Register Person', url: '/shelter/registerPerson' },
+  { title: 'Property Dashboard', url: '/propertyOwner/dashboard' },
+  { title: 'Shelter Dashboard', url: '/shelter/dashboard' }
 ];
 
 function NavLink({ link }: { link: ILink }) {

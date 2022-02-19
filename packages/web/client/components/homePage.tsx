@@ -77,7 +77,7 @@ export default function HomePage() {
                   Donor
                 </Button>
               </NextLink>
-              <NextLink href="/propertyOwner">
+              <NextLink href="/propertyOwner/listProperty">
                 <Button
                   rounded={'full'}
                   size={'lg'}
