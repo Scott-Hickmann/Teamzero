@@ -8,6 +8,7 @@ export function Submit({ value, ...props }: SubmitProps) {
   return (
     <Input
       type="submit"
+      cursor="pointer"
       fontFamily={'heading'}
       mt={8}
       w={'full'}

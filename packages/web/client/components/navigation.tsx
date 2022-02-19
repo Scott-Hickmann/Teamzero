@@ -9,16 +9,19 @@ import {
   Link,
   Menu,
   MenuButton,
-  MenuDivider,
   MenuItem,
   MenuList,
   Stack,
+  Text,
   useColorMode,
   useColorModeValue,
   useDisclosure
 } from '@chakra-ui/react';
+import { signOut } from 'next-auth/react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+
+import { useUser } from '../hooks';
 
 interface ILink {
   title: string;
@@ -60,6 +63,8 @@ function NavLink({ link }: { link: ILink }) {
 }
 
 export default function Navigation() {
+  const { user } = useUser();
+
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -85,31 +90,39 @@ export default function Navigation() {
           <Button onClick={toggleColorMode}>
             {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
           </Button>
-          <Button variant={'solid'} colorScheme={'red'}>
-            Sign In
-          </Button>
-          <Menu>
-            <MenuButton
-              as={Button}
-              rounded={'full'}
-              variant={'link'}
-              cursor={'pointer'}
-              minW={0}
-            >
-              <Avatar
-                size={'sm'}
-                src={
-                  'https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
-                }
-              />
-            </MenuButton>
-            <MenuList>
-              <MenuItem>Link 1</MenuItem>
-              <MenuItem>Link 2</MenuItem>
-              <MenuDivider />
-              <MenuItem>Link 3</MenuItem>
-            </MenuList>
-          </Menu>
+          {user ? (
+            <Menu>
+              <MenuButton
+                as={Button}
+                rounded={'full'}
+                variant={'link'}
+                cursor={'pointer'}
+                minW={0}
+              >
+                <Text>
+                  {user.firstName} {user.lastName}
+                </Text>
+              </MenuButton>
+              <MenuList>
+                <MenuItem color="red" onClick={() => signOut()}>
+                  Sign Out
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          ) : (
+            <>
+              <NextLink href="/signin">
+                <Button variant={'solid'} colorScheme={'red'}>
+                  Sign In
+                </Button>
+              </NextLink>
+              <NextLink href="/signup">
+                <Button variant={'solid'} colorScheme={'red'}>
+                  Sign Up
+                </Button>
+              </NextLink>
+            </>
+          )}
         </HStack>
       </Flex>
 

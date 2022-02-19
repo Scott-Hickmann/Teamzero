@@ -1,21 +1,22 @@
 import { Box, Heading, HStack, Stack, Text } from '@chakra-ui/react';
+import uid from '@teamzero/common/uid';
+import { Donation } from '@teamzero/types';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { useWeb3 } from '../../hooks';
+import { fetchApi } from '../../fetchApi';
+import { useUser, useWeb3 } from '../../hooks';
 import { Input, Select, Submit } from '../form';
 
-interface Data {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  donationCriteria: string;
+interface FormData {
+  criteria: string;
   amount: string;
 }
 
 export default function DonorForm() {
+  const { user } = useUser();
+
   const { account } = useWeb3();
   console.log(account);
 
@@ -24,12 +25,26 @@ export default function DonorForm() {
     handleSubmit,
     formState: { errors }
   } = useForm();
-  const [data, setData] = useState<Data | undefined>();
+  const [data, setData] = useState<FormData | undefined>();
 
   useEffect(() => {
     if (!data) return;
-    console.log(data);
+    if (!user) {
+      alert('Please sign in to donate');
+      return;
+    }
     // TODO: Sign transaction then post to api
+    const donation: Donation = {
+      id: uid(),
+      userId: user.id,
+      criteria: [data.criteria],
+      amount: parseFloat(data.amount),
+      contractAddress: 'TODO',
+      contractId: 'TODO',
+      status: 'pending'
+    };
+    fetchApi({ path: '/donor/donate', payload: { donation } });
+    alert('Donation submitted! Thank you for your support');
   }, [data]);
 
   return (
@@ -66,36 +81,11 @@ export default function DonorForm() {
         as={'form'}
         mt={10}
         onSubmit={handleSubmit((data) => {
-          setData(data as Data);
+          setData(data as FormData);
         })}
       >
         <Stack spacing={4}>
-          <HStack>
-            <Input
-              type="text"
-              placeholder="First Name"
-              {...register('firstName', { required: true })}
-            />
-            <Input
-              type="text"
-              placeholder="Last Name"
-              {...register('lastName', { required: true })}
-            />
-          </HStack>
-          <Input
-            type="email"
-            placeholder="email@domain.com"
-            {...register('email', { required: true })}
-          />
-          <Input
-            type="tel"
-            placeholder="+1 (___) __-___-___"
-            {...register('phoneNumber', { required: true })}
-          />
-          <Select
-            placeholder="Donation Criteria"
-            {...register('donationCriteria')}
-          >
+          <Select placeholder="Donation Criteria" {...register('criteria')}>
             <option value="hasFamilyMember">Has family members</option>
             <option value="homelessSinceMoreThan3Months">
               Homeless since more than 3 months
