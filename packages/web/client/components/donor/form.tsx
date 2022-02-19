@@ -1,8 +1,12 @@
 import { Box, Heading, HStack, Stack, Text } from '@chakra-ui/react';
 
+import { useWeb3 } from '../../hooks';
 import { Input, Select, Submit } from '../form';
 
 export default function DonorForm() {
+  const { account } = useWeb3();
+  console.log(account);
+
   return (
     <Stack
       bg={'gray.50'}
