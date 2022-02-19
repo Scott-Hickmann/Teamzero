@@ -15,7 +15,31 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
+import { useUser } from '../hooks';
+
+type HomeButtonProps = React.PropsWithChildren<{ href: string }>;
+
+function HomeButton({ href, children }: HomeButtonProps) {
+  return (
+    <NextLink href={href}>
+      <Button
+        rounded={'full'}
+        size={'lg'}
+        fontWeight={'normal'}
+        px={6}
+        colorScheme={'red'}
+        bg={'red.400'}
+        _hover={{ bg: 'red.500' }}
+      >
+        {children}
+      </Button>
+    </NextLink>
+  );
+}
+
 export default function HomePage() {
+  const { user } = useUser();
+
   return (
     <Container maxW={'7xl'}>
       <Stack
@@ -59,51 +83,38 @@ export default function HomePage() {
               owners, and contacting the homeless shelter in need of extra
               space.
             </Text>
-            <Heading>I&apos;m a</Heading>
+            {user == null && <Heading>I&apos;m a</Heading>}
             <Stack
               spacing={{ base: 4, sm: 6 }}
               direction={{ base: 'column', sm: 'row' }}
             >
-              <NextLink href="/donor">
-                <Button
-                  rounded={'full'}
-                  size={'lg'}
-                  fontWeight={'normal'}
-                  px={6}
-                  colorScheme={'red'}
-                  bg={'red.400'}
-                  _hover={{ bg: 'red.500' }}
-                >
-                  Donor
-                </Button>
-              </NextLink>
-              <NextLink href="/propertyOwner/listProperty">
-                <Button
-                  rounded={'full'}
-                  size={'lg'}
-                  fontWeight={'normal'}
-                  px={6}
-                  colorScheme={'red'}
-                  bg={'red.400'}
-                  _hover={{ bg: 'red.500' }}
-                >
-                  Property Owner
-                </Button>
-              </NextLink>
-              <NextLink href="/shelter/registerPerson">
-                <Button
-                  rounded={'full'}
-                  size={'lg'}
-                  fontWeight={'normal'}
-                  px={6}
-                  colorScheme={'red'}
-                  bg={'red.400'}
-                  _hover={{ bg: 'red.500' }}
-                >
-                  {/* TODO: This assumes we skip sign up for the demo */}
-                  Shelter
-                </Button>
-              </NextLink>
+              {user?.type === 'donor' ? (
+                <>
+                  <HomeButton href="/donor/donate">Donate</HomeButton>
+                </>
+              ) : user?.type === 'propertyOwner' ? (
+                <>
+                  <HomeButton href="/propertyOwner/dashboard">
+                    Dashboard
+                  </HomeButton>
+                  <HomeButton href="/propertyOwner/listProperty">
+                    Register Person
+                  </HomeButton>
+                </>
+              ) : user?.type === 'shelter' ? (
+                <>
+                  <HomeButton href="/shelter/dashboard">Dashboard</HomeButton>
+                  <HomeButton href="/shelter/registerPerson">
+                    Register Person
+                  </HomeButton>
+                </>
+              ) : (
+                <>
+                  <HomeButton href="/signin">Donor</HomeButton>
+                  <HomeButton href="/signin">Property Owner</HomeButton>
+                  <HomeButton href="/signin">Shelter</HomeButton>
+                </>
+              )}
             </Stack>
           </Stack>
         </Stack>

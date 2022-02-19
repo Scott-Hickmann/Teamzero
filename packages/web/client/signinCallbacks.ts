@@ -1,5 +1,5 @@
 export const signinCallbacks = {
-  donor: '/donor',
+  donor: '/donor/donate',
   propertyOwner: '/propertyOwner/dashboard',
   shelter: '/shelter/dashboard'
 };

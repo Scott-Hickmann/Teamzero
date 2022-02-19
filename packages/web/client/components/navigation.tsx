@@ -1,6 +1,5 @@
 import { CloseIcon, HamburgerIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
 import {
-  Avatar,
   Box,
   Button,
   Flex,
@@ -17,35 +16,41 @@ import {
   useColorModeValue,
   useDisclosure
 } from '@chakra-ui/react';
-import { signOut } from 'next-auth/react';
+import { UserType } from '@teamzero/types';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import { signOut } from 'next-auth/react';
+import { useMemo } from 'react';
 
 import { useUser } from '../hooks';
 
 interface ILink {
   title: string;
-  url: string;
+  href: string;
 }
 
-const Links: ILink[] = [
-  { title: 'Home', url: '/' },
-  { title: 'Donate', url: '/donor' },
-  { title: 'List Property', url: '/propertyOwner/listProperty' },
-  { title: 'Register Person', url: '/shelter/registerPerson' },
-  { title: 'Property Dashboard', url: '/propertyOwner/dashboard' },
-  { title: 'Shelter Dashboard', url: '/shelter/dashboard' }
-];
+const links: Record<UserType | 'anonymous', ILink[]> = {
+  anonymous: [{ title: 'Home', href: '/' }],
+  donor: [{ title: 'Donate', href: '/donor/donate' }],
+  propertyOwner: [
+    { title: 'Property Dashboard', href: '/propertyOwner/dashboard' },
+    { title: 'List Property', href: '/propertyOwner/listProperty' }
+  ],
+  shelter: [
+    { title: 'Shelter Dashboard', href: '/shelter/dashboard' },
+    { title: 'Register Person', href: '/shelter/registerPerson' }
+  ]
+};
 
 function NavLink({ link }: { link: ILink }) {
   const router = useRouter();
 
-  const isActive = link.url === router.route;
+  const isActive = link.href === router.route;
 
   const activeBg = useColorModeValue('gray.200', 'gray.700');
 
   return (
-    <NextLink href={link.url}>
+    <NextLink href={link.href}>
       <Link
         px={2}
         py={1}
@@ -68,6 +73,11 @@ export default function Navigation() {
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const userLinks = useMemo(
+    () => [...links['anonymous'], ...(user ? links[user?.type] : [])],
+    [user]
+  );
+
   return (
     <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
       <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
@@ -81,7 +91,7 @@ export default function Navigation() {
         <HStack spacing={8} alignItems={'center'}>
           <Box fontWeight="bold">Teamzero</Box>
           <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
-            {Links.map((link) => (
+            {userLinks.map((link) => (
               <NavLink key={link.title} link={link} />
             ))}
           </HStack>
@@ -129,7 +139,7 @@ export default function Navigation() {
       {isOpen ? (
         <Box pb={4} display={{ md: 'none' }}>
           <Stack as={'nav'} spacing={4}>
-            {Links.map((link) => (
+            {userLinks.map((link) => (
               <NavLink key={link.title} link={link} />
             ))}
           </Stack>

@@ -59,12 +59,6 @@ export default function PropertyOwnerForm() {
       </Stack>
       <Box as={'form'} mt={10}>
         <Stack spacing={4}>
-          <HStack>
-            <Input placeholder="First Name" />
-            <Input placeholder="Last Name" />
-          </HStack>
-          <Input placeholder="email@domain.com" />
-          <Input placeholder="+1 (___) __-___-___" />
           <Select placeholder="Allowed Criteria">
             <option value="hasFamilyMember">Has family members</option>
             <option value="homelessSinceMoreThan3Months">

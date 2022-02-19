@@ -25,27 +25,6 @@ export default function DonorForm() {
     handleSubmit,
     formState: { errors }
   } = useForm();
-  const [data, setData] = useState<FormData | undefined>();
-
-  useEffect(() => {
-    if (!data) return;
-    if (!user) {
-      alert('Please sign in to donate');
-      return;
-    }
-    // TODO: Sign transaction then post to api
-    const donation: Donation = {
-      id: uid(),
-      userId: user.id,
-      criteria: [data.criteria],
-      amount: parseFloat(data.amount),
-      contractAddress: 'TODO',
-      contractId: 'TODO',
-      status: 'pending'
-    };
-    fetchApi({ path: '/donor/donate', payload: { donation } });
-    alert('Donation submitted! Thank you for your support');
-  }, [data]);
 
   return (
     <Stack
@@ -80,8 +59,24 @@ export default function DonorForm() {
       <Box
         as={'form'}
         mt={10}
-        onSubmit={handleSubmit((data) => {
-          setData(data as FormData);
+        onSubmit={handleSubmit((rawData) => {
+          if (!user) {
+            alert('Please sign in to donate');
+            return;
+          }
+          const data = rawData as FormData;
+          // TODO: Sign transaction then post to api
+          const donation: Donation = {
+            id: uid(),
+            userId: user.id,
+            criteria: [data.criteria],
+            amount: parseFloat(data.amount),
+            contractAddress: 'TODO',
+            contractId: 'TODO',
+            status: 'pending'
+          };
+          fetchApi({ path: '/donor/donate', payload: { donation } });
+          alert('Donation submitted! Thank you for your support');
         })}
       >
         <Stack spacing={4}>
