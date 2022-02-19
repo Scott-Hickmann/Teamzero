@@ -110,9 +110,9 @@ export default function HomePage() {
                 </>
               ) : (
                 <>
-                  <HomeButton href="/signin">Donor</HomeButton>
-                  <HomeButton href="/signin">Property Owner</HomeButton>
-                  <HomeButton href="/signin">Shelter</HomeButton>
+                  <HomeButton href="/signup">Donor</HomeButton>
+                  <HomeButton href="/signup">Property Owner</HomeButton>
+                  <HomeButton href="/signup">Shelter</HomeButton>
                 </>
               )}
             </Stack>
