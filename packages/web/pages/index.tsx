@@ -1,6 +1,6 @@
 import { Center } from '@chakra-ui/react';
 
-import Demo from '../client/components/demo';
+import HomePageBody from '../client/components/homePage';
 import Navigation from '../client/components/navigation';
 
 export default function HomePage() {
@@ -8,7 +8,7 @@ export default function HomePage() {
     <>
       <Navigation />
       <Center py={16}>
-        <Demo />
+        <HomePageBody />
       </Center>
     </>
   );

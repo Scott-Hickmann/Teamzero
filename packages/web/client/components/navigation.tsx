@@ -1,10 +1,4 @@
-import {
-  AddIcon,
-  CloseIcon,
-  HamburgerIcon,
-  MoonIcon,
-  SunIcon
-} from '@chakra-ui/icons';
+import { CloseIcon, HamburgerIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
 import {
   Avatar,
   Box,
@@ -24,23 +18,44 @@ import {
   useDisclosure
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import { ReactNode } from 'react';
+import { useRouter } from 'next/router';
 
-const Links = ['Dashboard', 'Projects', 'Team'];
+interface ILink {
+  title: string;
+  url: string;
+}
 
-const NavLink = ({ children }: { children: ReactNode }) => (
-  <Link
-    px={2}
-    py={1}
-    rounded={'md'}
-    _hover={{
-      textDecoration: 'none',
-      bg: useColorModeValue('gray.200', 'gray.700')
-    }}
-  >
-    <NextLink href="#">{children}</NextLink>
-  </Link>
-);
+const Links: ILink[] = [
+  { title: 'Home', url: '/' },
+  { title: 'Donate', url: '/donor' },
+  { title: 'List Property', url: '/propertyOwner' },
+  { title: 'Register Person', url: '/shelter/registerPerson' }
+];
+
+function NavLink({ link }: { link: ILink }) {
+  const router = useRouter();
+
+  const isActive = link.url === router.route;
+
+  const activeBg = useColorModeValue('gray.200', 'gray.700');
+
+  return (
+    <NextLink href={link.url}>
+      <Link
+        px={2}
+        py={1}
+        rounded={'md'}
+        _hover={{
+          textDecoration: 'none',
+          bg: activeBg
+        }}
+        {...(isActive ? { bg: activeBg } : {})}
+      >
+        {link.title}
+      </Link>
+    </NextLink>
+  );
+}
 
 export default function Navigation() {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -57,10 +72,10 @@ export default function Navigation() {
           onClick={isOpen ? onClose : onOpen}
         />
         <HStack spacing={8} alignItems={'center'}>
-          <Box>Logo</Box>
+          <Box fontWeight="bold">Teamzero</Box>
           <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
             {Links.map((link) => (
-              <NavLink key={link}>{link}</NavLink>
+              <NavLink key={link.title} link={link} />
             ))}
           </HStack>
         </HStack>
@@ -68,13 +83,8 @@ export default function Navigation() {
           <Button onClick={toggleColorMode}>
             {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
           </Button>
-          <Button
-            variant={'solid'}
-            colorScheme={'teal'}
-            size={'sm'}
-            leftIcon={<AddIcon />}
-          >
-            Action
+          <Button variant={'solid'} colorScheme={'red'}>
+            Sign In
           </Button>
           <Menu>
             <MenuButton
@@ -105,7 +115,7 @@ export default function Navigation() {
         <Box pb={4} display={{ md: 'none' }}>
           <Stack as={'nav'} spacing={4}>
             {Links.map((link) => (
-              <NavLink key={link}>{link}</NavLink>
+              <NavLink key={link.title} link={link} />
             ))}
           </Stack>
         </Box>
