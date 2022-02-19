@@ -47,6 +47,11 @@ export default function Signin({ providers }: SignupProps): ReactElement {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [type, setType] = useState('');
+  const [shelterName, setShelterName] = useState('');
+  const [address, setAddress] = useState('');
+  const [zipcode, setZipcode] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
 
   const [error, setError] = useState<string>();
 
@@ -78,11 +83,37 @@ export default function Signin({ providers }: SignupProps): ReactElement {
       setError('Please select a valid type.');
       return;
     }
+    if (type === 'shelter') {
+      if (!validateName(shelterName)) {
+        setError('Please enter a valid shelter name.');
+        return;
+      }
+      if (address === '') {
+        setError('Please enter a valid address.');
+        return;
+      }
+      if (zipcode === '') {
+        setError('Please enter a valid zipcode.');
+        return;
+      }
+      if (city === '') {
+        setError('Please enter a valid city.');
+        return;
+      }
+      if (state === '') {
+        setError('Please enter a valid state.');
+        return;
+      }
+    }
     setError('');
+    const shelter =
+      type === 'shelter'
+        ? { name: shelterName, address, zipcode, city, state }
+        : undefined;
     try {
       await fetchApi({
         path: '/auth/signup',
-        payload: { firstName, lastName, email, password, type }
+        payload: { firstName, lastName, email, password, type, shelter }
       });
     } catch (error) {
       setError(String(error));
@@ -120,6 +151,18 @@ export default function Signin({ providers }: SignupProps): ReactElement {
             p={8}
           >
             <Stack spacing={4}>
+              <FormControl isRequired>
+                <FormLabel>I&rsquo;m a</FormLabel>
+                <Select
+                  placeholder="Select option"
+                  value={type}
+                  onChange={(event) => setType(event.target.value)}
+                >
+                  <option value="donor">Donor</option>
+                  <option value="propertyOwner">Property Owner</option>
+                  <option value="shelter">Shelter</option>
+                </Select>
+              </FormControl>
               <HStack>
                 <FormControl isRequired>
                   <FormLabel>First Name</FormLabel>
@@ -166,18 +209,50 @@ export default function Signin({ providers }: SignupProps): ReactElement {
                   </InputRightElement>
                 </InputGroup>
               </FormControl>
-              <FormControl isRequired>
-                <FormLabel>I&rsquo;m a</FormLabel>
-                <Select
-                  placeholder="Select option"
-                  value={type}
-                  onChange={(event) => setType(event.target.value)}
-                >
-                  <option value="donor">Donor</option>
-                  <option value="propertyOwner">Property Owner</option>
-                  <option value="shelter">Shelter</option>
-                </Select>
-              </FormControl>
+              {type === 'shelter' && (
+                <>
+                  <FormControl isRequired>
+                    <FormLabel>Shelter Name</FormLabel>
+                    <Input
+                      type="text"
+                      value={shelterName}
+                      onChange={(event) => setShelterName(event.target.value)}
+                    />
+                  </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>Address</FormLabel>
+                    <Input
+                      type="text"
+                      value={address}
+                      onChange={(event) => setAddress(event.target.value)}
+                    />
+                  </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>Zipcode</FormLabel>
+                    <Input
+                      type="text"
+                      value={zipcode}
+                      onChange={(event) => setZipcode(event.target.value)}
+                    />
+                  </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>City</FormLabel>
+                    <Input
+                      type="text"
+                      value={city}
+                      onChange={(event) => setCity(event.target.value)}
+                    />
+                  </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>State</FormLabel>
+                    <Input
+                      type="text"
+                      value={state}
+                      onChange={(event) => setState(event.target.value)}
+                    />
+                  </FormControl>
+                </>
+              )}
               <Stack spacing={10} pt={2}>
                 <Button
                   loadingText="Submitting"

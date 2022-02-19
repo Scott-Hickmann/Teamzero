@@ -4,18 +4,29 @@ import {
   validateName,
   validatePassword
 } from '@teamzero/common/validateCredentials';
-import { Credentials, User } from '@teamzero/types';
+import { Credentials, Shelter, User } from '@teamzero/types';
 import bcrypt from 'bcryptjs';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { connectToDatabase } from '../../../server/database';
-import { CredentialsModel, UserModel } from '../../../server/database/models';
+import {
+  CredentialsModel,
+  ShelterModel,
+  UserModel
+} from '../../../server/database/models';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { firstName, lastName, email, password, type } = req.body;
+  const {
+    firstName,
+    lastName,
+    email,
+    password,
+    type,
+    shelter: rawShelter
+  } = req.body;
   if (!validateName(firstName)) {
     return res
       .status(200)
@@ -29,6 +40,20 @@ export default async function handler(
   }
   if (!validatePassword(password)) {
     return res.status(200).json({ success: false, error: 'Invalid password' });
+  }
+  const id = uid();
+  let shelter: Shelter | undefined;
+  if (rawShelter) {
+    // TODO: Validate shelter
+    shelter = {
+      id: uid(),
+      userId: id,
+      name: rawShelter.name,
+      address: rawShelter.address,
+      zipcode: rawShelter.zipcode,
+      city: rawShelter.city,
+      state: rawShelter.state
+    };
   }
   let hash: string;
   try {
@@ -47,7 +72,6 @@ export default async function handler(
       .json({ success: false, error: 'Error hashing password' });
   }
   const createdAt = new Date().toISOString();
-  const id = uid();
   const credentials: Credentials = {
     id,
     createdAt,
@@ -72,5 +96,8 @@ export default async function handler(
       .json({ success: false, error: 'User already exists' });
   }
   await CredentialsModel.create(credentials);
+  if (shelter) {
+    await ShelterModel.create(shelter);
+  }
   res.status(200).json({ success: true });
 }
