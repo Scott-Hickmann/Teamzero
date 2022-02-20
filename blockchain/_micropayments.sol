@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0 <0.9.0;
-contract SimplePaymentChannel {
+contract micropayments {
     address payable public sender;      // The account sending payments.
     address payable public recipient;   // The account receiving the payments.
-    uint256[5] public conditions;
+    uint256[5] public conditions;   //conditions for 
     uint256 public expiration;  // Timeout in case the recipient never closes.
-    uint256 public maxamount;
+    uint256 public maxamount;   // maximum amount to be donated
 
     constructor (address payable recipientAddress, uint256 duration, uint256[] memory cond, uint256 maxam)
         payable
@@ -39,6 +39,23 @@ contract SimplePaymentChannel {
         selfdestruct(sender);
     }
 
+    function simple_close(uint256 amount, uint256[] memory conds) external {
+        require(msg.sender == recipient);
+        // require(isValidSignature(amount, signature));
+        require(amount <= maxamount);
+
+        for (uint i = 0; i < conds.length - 1; i++) {
+            require(conds[i] == conditions[i]);
+        }
+
+
+        recipient.transfer(amount);
+        selfdestruct(sender);
+    }
+
+
+
+
     /// the sender can extend the expiration at any time
     function extend(uint256 newExpiration) external {
         require(msg.sender == sender);
@@ -48,7 +65,7 @@ contract SimplePaymentChannel {
     }
 
  /// the sender can change conditions at any time
-    function extend(uint256[] memory newconds) external {
+    function modifyConditions(uint256[] memory newconds) external {
         require(msg.sender == sender);
         
         for (uint i = 0; i < newconds.length - 1; i++) {
