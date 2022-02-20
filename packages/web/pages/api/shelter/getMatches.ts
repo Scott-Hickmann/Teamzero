@@ -45,5 +45,26 @@ export default withAuth(async function handler(
       propertyDoc ? [[propertyDoc.id, documentToObject(propertyDoc)]] : []
     )
   );
-  res.json({ success: true, data: { matches, shelterPersons, properties } });
+  const propertyOwners = Object.fromEntries(
+    (
+      await Promise.all(
+        matches.map((match) => {
+          return UserModel.findOne({ id: match.propertyOwnerId });
+        })
+      )
+    ).flatMap((propertyDoc) =>
+      propertyDoc
+        ? [
+            [
+              propertyDoc.id,
+              { ...documentToObject(propertyDoc), passwordHash: 'hidden' }
+            ]
+          ]
+        : []
+    )
+  );
+  res.json({
+    success: true,
+    data: { matches, shelterPersons, properties, propertyOwners }
+  });
 });

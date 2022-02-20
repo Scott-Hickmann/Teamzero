@@ -72,7 +72,13 @@ export default function PersonCard({
             {firstName} {lastName}
           </Heading>
           <Text color={'gray.500'}>Match for: {address}</Text>
-          <Text fontWeight={600}>${price}</Text>
+          <Text fontWeight={600}>
+            {price.toLocaleString('fullwide', {
+              useGrouping: false,
+              maximumSignificantDigits: 18
+            })}{' '}
+            ETH
+          </Text>
         </Stack>
         {!responded && (
           <Stack mt={6} direction={'row'} spacing={4}>

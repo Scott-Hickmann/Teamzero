@@ -6,7 +6,6 @@ const schema = new Schema<Donation>({
   userId: { type: String, required: true },
   criteria: [{ type: String, required: true }],
   amount: { type: Number, required: true },
-  contractId: { type: String, required: true },
   contractAddress: { type: String, required: true },
   status: { type: String, required: true }
 });

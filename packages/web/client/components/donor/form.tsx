@@ -100,7 +100,6 @@ export default function DonorForm() {
             criteria: data.criteria ? data.criteria : [],
             amount: parseFloat(data.amount),
             contractAddress: '',
-            contractId: '',
             status: 'pending'
           };
           const contractArguments = [
@@ -137,6 +136,7 @@ export default function DonorForm() {
               { donation: Donation }
             >({ path: '/donor/donate', payload: { donation } });
             if (!success) throw error ?? 'An error occurred';
+            console.log(micropaymentsInstance);
             return micropaymentsInstance.options.address;
           };
           const deploySmartContractPromise = deploySmartContract();

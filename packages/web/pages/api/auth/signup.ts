@@ -25,6 +25,7 @@ export default async function handler(
     email,
     password,
     type,
+    walletAddress,
     shelter: rawShelter
   } = req.body;
   if (!validateName(firstName)) {
@@ -41,6 +42,11 @@ export default async function handler(
   if (!validatePassword(password)) {
     return res.status(200).json({ success: false, error: 'Invalid password' });
   }
+  if (!walletAddress) {
+    return res
+      .status(200)
+      .json({ success: false, error: 'Invalid wallet address' });
+  }
   const id = uid();
   let shelter: Shelter | undefined;
   if (rawShelter) {
@@ -52,7 +58,7 @@ export default async function handler(
       zipcode: rawShelter.zipcode,
       city: rawShelter.city,
       state: rawShelter.state,
-      walletAddress: rawShelter.walletAddress
+      walletAddress
     };
   }
   let hash: string;
@@ -85,7 +91,8 @@ export default async function handler(
     updatedAt: createdAt,
     firstName,
     lastName,
-    type
+    type,
+    walletAddress
   };
   await connectToDatabase();
   try {

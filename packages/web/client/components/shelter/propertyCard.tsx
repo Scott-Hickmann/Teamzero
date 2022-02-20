@@ -7,8 +7,13 @@ import {
   Text,
   useColorModeValue
 } from '@chakra-ui/react';
+import { criteriaStringArrayToIntArray } from '@teamzero/common/criteria';
+import { Donation } from '@teamzero/types';
+import { toast } from 'react-toastify';
 import { useSWRConfig } from 'swr';
+import { AbiItem } from 'web3-utils';
 
+import Micropayments from '../../../contracts/Micropayments.json';
 import { fetchApi } from '../../fetchApi';
 import { useWeb3 } from '../../hooks';
 
@@ -23,6 +28,7 @@ export interface PropertyCardProps {
   price: number;
   responded?: boolean;
   paid?: boolean;
+  propertyOwnerWalletAddress: string;
 }
 
 export default function PropertyCard({
@@ -35,7 +41,8 @@ export default function PropertyCard({
   personLastName,
   price,
   responded,
-  paid
+  paid,
+  propertyOwnerWalletAddress
 }: PropertyCardProps) {
   const { web3 } = useWeb3();
 
@@ -71,29 +78,107 @@ export default function PropertyCard({
       alert('Please install a blockchain wallet.');
       return;
     }
-    if (!accounts[0]) {
+    const account = accounts[0];
+    if (!account) {
       alert('Please setup an account on your wallet.');
       return;
     }
-    const { success, error } = await fetchApi<
-      { success: boolean; error?: string },
+    const { success, data, error } = await fetchApi<
+      { success: boolean; data: { donations: Donation[] }; error?: string },
       { matchId: string }
-    >({ path: '/shelter/viewDonation', payload: { matchId } });
+    >({ path: '/shelter/viewDonations', payload: { matchId } });
     if (!success) {
       alert(error ?? 'An error occurred');
       return;
     }
-    // TODO: Pay with smart contract
-    const { success: success2, error: error2 } = await fetchApi<
-      { success: boolean; error?: string },
-      { matchId: string }
-    >({ path: '/shelter/payMatch', payload: { matchId } });
-    if (!success2) {
-      alert(error2 ?? 'An error occurred');
-      return;
-    }
-    mutate('/shelter/getMatches');
-    alert('Match paid! Please let the person know');
+    const donations = data.donations;
+
+    const deploySmartContract = async () => {
+      const batch = new web3.BatchRequest();
+      const promises: Promise<unknown>[] = [];
+
+      // Receive donations
+      for (const donation of donations) {
+        const micropayments = new web3.eth.Contract(
+          Micropayments.abi as AbiItem[],
+          donation.contractAddress
+        );
+        const weiAmount = web3.utils.toWei(
+          donation.amount.toLocaleString('fullwide', {
+            useGrouping: false,
+            maximumSignificantDigits: 18
+          }),
+          'ether'
+        );
+        promises.push(
+          micropayments.methods
+            .simple_close(
+              weiAmount,
+              criteriaStringArrayToIntArray(donation.criteria)
+            )
+            .send(
+              {
+                from: account,
+                gas: 150000,
+                gasPrice: '3000000000'
+              },
+              (err: Error, transactionHash: string) => {
+                toast.info(`Pending transaction: ${transactionHash}`, {
+                  position: 'bottom-right'
+                });
+              }
+            )
+            .on('confirmation', () => undefined)
+        );
+      }
+      const results = await Promise.all(promises);
+      console.log(results);
+
+      // Send donations to property owner
+      const weiAmount = web3.utils.toWei(
+        price.toLocaleString('fullwide', {
+          useGrouping: false,
+          maximumSignificantDigits: 18
+        }),
+        'ether'
+      );
+      const result = await web3.eth
+        .sendTransaction({
+          from: account,
+          to: propertyOwnerWalletAddress,
+          value: weiAmount,
+          gas: 150000,
+          gasPrice: '3000000000'
+        })
+        .on('confirmation', () => undefined);
+      console.log(result);
+
+      const { success, error } = await fetchApi<
+        { success: boolean; error?: string },
+        { matchId: string }
+      >({ path: '/shelter/payMatch', payload: { matchId } });
+      if (!success) throw error ?? 'An error occurred';
+      mutate('/shelter/getMatches');
+    };
+    const deploySmartContractPromise = deploySmartContract();
+    toast.promise(
+      deploySmartContractPromise,
+      {
+        pending: 'Transferring money, please wait...',
+        success: 'Match paid! Please let the person know',
+        error: {
+          render({ data }) {
+            // When the promise reject, data will contains the error
+            return String(
+              typeof data === 'object'
+                ? (data as unknown as { message: string }).message ?? data
+                : data
+            );
+          }
+        }
+      },
+      { position: 'bottom-right' }
+    );
   };
 
   return (
@@ -121,7 +206,13 @@ export default function PropertyCard({
           <Text color={'gray.500'}>
             Match for: {personFirstName} {personLastName}
           </Text>
-          <Text fontWeight={600}>${price}</Text>
+          <Text fontWeight={600}>
+            {price.toLocaleString('fullwide', {
+              useGrouping: false,
+              maximumSignificantDigits: 18
+            })}{' '}
+            ETH
+          </Text>
         </Stack>
         {!responded && (
           <Stack mt={6} direction={'row'} spacing={4}>
@@ -145,17 +236,16 @@ export default function PropertyCard({
             </Button>
           </Stack>
         )}
-        {paid != null && (
+        {paid === false && (
           <Stack mt={6} direction={'row'} spacing={4}>
             <Button
               flex={1}
               fontSize={'sm'}
               rounded={'full'}
-              colorScheme={paid ? 'green' : 'yellow'}
-              disabled={paid}
+              colorScheme={'yellow'}
               onClick={pay}
             >
-              {paid ? 'Paid' : 'Pay'}
+              Pay
             </Button>
           </Stack>
         )}

@@ -1,5 +1,5 @@
 import { splitMatches } from '@teamzero/common/splitMatches';
-import { Match, Property, ShelterPerson } from '@teamzero/types';
+import { Match, Property, ShelterPerson, User } from '@teamzero/types';
 
 import DashboardPage from '../../client/components/dashboardPage';
 import Layout from '../../client/components/layout';
@@ -14,6 +14,7 @@ export default function OwnerDashboard() {
       matches: Match[];
       shelterPersons: Record<string, ShelterPerson>;
       properties: Record<string, Property>;
+      propertyOwners: Record<string, User>;
     };
   }>(
     user
@@ -22,11 +23,13 @@ export default function OwnerDashboard() {
         }
       : undefined
   );
-  const { matches, shelterPersons, properties } = matchesData?.data ?? {
-    matches: [],
-    shelterPersons: {},
-    properties: {}
-  };
+  const { matches, shelterPersons, properties, propertyOwners } =
+    matchesData?.data ?? {
+      matches: [],
+      shelterPersons: {},
+      properties: {},
+      propertyOwners: {}
+    };
 
   const {
     pendingMatches,
@@ -47,6 +50,9 @@ export default function OwnerDashboard() {
       personFirstName={shelterPersons[match.shelterPersonId].firstName}
       personLastName={shelterPersons[match.shelterPersonId].lastName}
       price={properties[match.propertyId].hourlyRate}
+      propertyOwnerWalletAddress={
+        propertyOwners[match.propertyOwnerId].walletAddress
+      }
     />
   ));
 
@@ -61,6 +67,9 @@ export default function OwnerDashboard() {
       personFirstName={shelterPersons[match.shelterPersonId].firstName}
       personLastName={shelterPersons[match.shelterPersonId].lastName}
       price={properties[match.propertyId].hourlyRate}
+      propertyOwnerWalletAddress={
+        propertyOwners[match.propertyOwnerId].walletAddress
+      }
       responded
     />
   ));
@@ -76,6 +85,9 @@ export default function OwnerDashboard() {
       personFirstName={shelterPersons[match.shelterPersonId].firstName}
       personLastName={shelterPersons[match.shelterPersonId].lastName}
       price={properties[match.propertyId].hourlyRate}
+      propertyOwnerWalletAddress={
+        propertyOwners[match.propertyOwnerId].walletAddress
+      }
       responded
     />
   ));
@@ -91,6 +103,9 @@ export default function OwnerDashboard() {
       personFirstName={shelterPersons[match.shelterPersonId].firstName}
       personLastName={shelterPersons[match.shelterPersonId].lastName}
       price={properties[match.propertyId].hourlyRate}
+      propertyOwnerWalletAddress={
+        propertyOwners[match.propertyOwnerId].walletAddress
+      }
       responded
       paid={false}
     />
@@ -107,6 +122,9 @@ export default function OwnerDashboard() {
       personFirstName={shelterPersons[match.shelterPersonId].firstName}
       personLastName={shelterPersons[match.shelterPersonId].lastName}
       price={properties[match.propertyId].hourlyRate}
+      propertyOwnerWalletAddress={
+        propertyOwners[match.propertyOwnerId].walletAddress
+      }
       responded
       paid={true}
     />

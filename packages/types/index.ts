@@ -15,6 +15,7 @@ export interface User {
   firstName: string;
   lastName: string;
   type: UserType;
+  walletAddress: string;
 }
 
 export type DonationStatus = 'pending' | 'verified' | 'complete';
@@ -29,17 +30,6 @@ export interface Donation {
   userId: string;
   criteria: Criteria[];
   amount: number;
-  contractId: string;
-  contractAddress: string;
-  status: DonationStatus;
-}
-
-export interface Donation {
-  id: string;
-  userId: string;
-  criteria: Criteria[];
-  amount: number;
-  contractId: string;
   contractAddress: string;
   status: DonationStatus;
 }

@@ -9,7 +9,8 @@ const schema = new Schema<User>({
   updatedAt: { type: DateString, required: true },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
-  type: { type: String, required: true }
+  type: { type: String, required: true },
+  walletAddress: { type: String, required: true }
 });
 
 // eslint-disable-next-line @typescript-eslint/ban-types

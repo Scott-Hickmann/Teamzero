@@ -121,22 +121,26 @@ export default function PropertyOwnerForm() {
           />
           <Input
             type="number"
-            placeholder="Desired Hourly Rate (please be considerate)"
+            placeholder="Desired Hourly Rate (ETH)"
+            step="0.00000001"
             {...register('hourlyRate', { required: true })}
           />
           <Input
             type="number"
-            placeholder="Desired 3 Hours Rate (please be considerate)"
+            placeholder="Desired 3 Hours Rate (ETH)"
+            step="0.00000001"
             {...register('hoursThreeRate', { required: true })}
           />
           <Input
             type="number"
-            placeholder="Desired 6 Hours Rate (please be considerate)"
+            placeholder="Desired 6 Hours Rate (ETH)"
+            step="0.00000001"
             {...register('hoursSixRate', { required: true })}
           />
           <Input
             type="number"
-            placeholder="Desired Day Rate (please be considerate)"
+            placeholder="Desired Day Rate (ETH)"
+            step="0.00000001"
             {...register('dayRate', { required: true })}
           />
         </Stack>
