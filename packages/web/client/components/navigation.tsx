@@ -35,7 +35,8 @@ const links: Record<UserType | 'anonymous', ILink[]> = {
   propertyOwner: [
     { title: 'Property Dashboard', href: '/propertyOwner/dashboard' },
     { title: 'List Property', href: '/propertyOwner/listProperty' },
-    { title: 'Manage Properties', href: '/propertyOwner/manageProperties' }
+    { title: 'Manage Properties', href: '/propertyOwner/manageProperties' },
+    { title: 'Test', href: '/propertyOwner/test' }
   ],
   shelter: [
     { title: 'Shelter Dashboard', href: '/shelter/dashboard' },
