@@ -77,7 +77,7 @@ export default function HomePage() {
           </Heading>
           <Stack>
             <Text color={'gray.500'}>
-              Teamzero is a platform that efficiently allocates monetary
+              H O M E is a platform that efficiently allocates monetary
               resources and houses to people in need. It does so by collecting
               money from generous donors, then finding and paying property
               owners, and contacting the homeless shelter in need of extra

@@ -25,6 +25,7 @@ export default withAuth(async function handler(
     (
       await Promise.all(
         matches.map((match) => {
+          console.log(match);
           return ShelterPersonModel.findOne({ id: match.shelterPersonId });
         })
       )
