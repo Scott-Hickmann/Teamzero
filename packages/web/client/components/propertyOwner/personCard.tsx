@@ -7,8 +7,12 @@ import {
   Text,
   useColorModeValue
 } from '@chakra-ui/react';
+import { useSWRConfig } from 'swr';
+
+import { fetchApi } from '../../fetchApi';
 
 export interface PersonCardProps {
+  matchId: string;
   firstName: string;
   lastName: string;
   address: string;
@@ -17,12 +21,37 @@ export interface PersonCardProps {
 }
 
 export default function PersonCard({
+  matchId,
   firstName,
   lastName,
   address,
   price,
   responded
 }: PersonCardProps) {
+  const { mutate } = useSWRConfig();
+
+  const reject = async () => {
+    const { success } = await fetchApi<
+      { success: boolean },
+      { matchId: string }
+    >({ path: '/propertyOwner/rejectMatch', payload: { matchId } });
+    if (success) {
+      mutate('/propertyOwner/getMatches');
+      alert('Match rejected');
+    }
+  };
+
+  const accept = async () => {
+    const { success } = await fetchApi<
+      { success: boolean },
+      { matchId: string }
+    >({ path: '/propertyOwner/acceptMatch', payload: { matchId } });
+    if (success) {
+      mutate('/propertyOwner/getMatches');
+      alert('Match accepted');
+    }
+  };
+
   return (
     <Center py={6}>
       <Box
@@ -52,6 +81,7 @@ export default function PersonCard({
               fontSize={'sm'}
               rounded={'full'}
               colorScheme={'red'}
+              onClick={reject}
             >
               Decline
             </Button>
@@ -60,6 +90,7 @@ export default function PersonCard({
               fontSize={'sm'}
               rounded={'full'}
               colorScheme={'green'}
+              onClick={accept}
             >
               Accept
             </Button>

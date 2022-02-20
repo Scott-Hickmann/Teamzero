@@ -34,6 +34,7 @@ export default function OwnerDashboard() {
   const pendingMatchCards = pendingMatches.map((match) => (
     <PersonCard
       key={match.id}
+      matchId={match.id}
       firstName={shelterPersons[match.shelterPersonId].firstName}
       lastName={shelterPersons[match.shelterPersonId].lastName}
       address={properties[match.propertyId].address}
@@ -44,6 +45,7 @@ export default function OwnerDashboard() {
   const acceptedMatchCards = acceptedMatches.map((match) => (
     <PersonCard
       key={match.id}
+      matchId={match.id}
       firstName={shelterPersons[match.shelterPersonId].firstName}
       lastName={shelterPersons[match.shelterPersonId].lastName}
       address={properties[match.propertyId].address}
@@ -55,6 +57,7 @@ export default function OwnerDashboard() {
   const rejectedMatchCards = rejectedMatches.map((match) => (
     <PersonCard
       key={match.id}
+      matchId={match.id}
       firstName={shelterPersons[match.shelterPersonId].firstName}
       lastName={shelterPersons[match.shelterPersonId].lastName}
       address={properties[match.propertyId].address}
@@ -66,6 +69,7 @@ export default function OwnerDashboard() {
   const completeMatchCards = completedMatches.map((match) => (
     <PersonCard
       key={match.id}
+      matchId={match.id}
       firstName={shelterPersons[match.shelterPersonId].firstName}
       lastName={shelterPersons[match.shelterPersonId].lastName}
       address={properties[match.propertyId].address}

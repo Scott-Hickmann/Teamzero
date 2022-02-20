@@ -34,6 +34,7 @@ export default function OwnerDashboard() {
   const pendingMatchCards = pendingMatches.map((match) => (
     <PropertyCard
       key={match.id}
+      matchId={match.id}
       address={properties[match.propertyId].address}
       zipcode={properties[match.propertyId].zipcode}
       city={properties[match.propertyId].city}
@@ -47,6 +48,7 @@ export default function OwnerDashboard() {
   const acceptedMatchCards = acceptedMatches.map((match) => (
     <PropertyCard
       key={match.id}
+      matchId={match.id}
       address={properties[match.propertyId].address}
       zipcode={properties[match.propertyId].zipcode}
       city={properties[match.propertyId].city}
@@ -61,6 +63,7 @@ export default function OwnerDashboard() {
   const rejectedMatchCards = rejectedMatches.map((match) => (
     <PropertyCard
       key={match.id}
+      matchId={match.id}
       address={properties[match.propertyId].address}
       zipcode={properties[match.propertyId].zipcode}
       city={properties[match.propertyId].city}
@@ -75,6 +78,7 @@ export default function OwnerDashboard() {
   const completeMatchCards = completedMatches.map((match) => (
     <PropertyCard
       key={match.id}
+      matchId={match.id}
       address={properties[match.propertyId].address}
       zipcode={properties[match.propertyId].zipcode}
       city={properties[match.propertyId].city}

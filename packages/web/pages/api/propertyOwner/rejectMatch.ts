@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { withAuth } from '../../../server/auth';
-import { UserModel } from '../../../server/database/models';
+import { MatchModel, UserModel } from '../../../server/database/models';
 
 export default withAuth(async function handler(
   req: NextApiRequest,
@@ -13,6 +13,18 @@ export default withAuth(async function handler(
     res.status(200).json({ success: false, error: 'Invalid user' });
     return;
   }
-  // TODO: Reject match
-  res.json({ success: true, data: {} });
+  const { matchId } = req.body as { matchId: string };
+  if (!matchId) {
+    res.status(200).json({ success: false, error: 'Invalid match ID' });
+    return;
+  }
+  const matchDoc = await MatchModel.findOneAndUpdate(
+    { id: matchId, propertyOwnerId: userId },
+    { propertyOwnerStatus: 'rejected' }
+  );
+  if (!matchDoc) {
+    res.status(200).json({ success: false, error: 'Invalid match' });
+    return;
+  }
+  res.json({ success: true });
 });
