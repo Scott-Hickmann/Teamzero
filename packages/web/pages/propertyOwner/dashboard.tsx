@@ -28,6 +28,7 @@ export default function OwnerDashboard() {
     properties: {}
   };
 
+  console.log(matches, shelterPersons, properties)
 
   const { pendingMatches, acceptedMatches, rejectedMatches, completedMatches } =
     splitMatches(matches, 'propertyOwner');
