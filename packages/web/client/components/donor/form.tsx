@@ -10,7 +10,7 @@ import { useUser, useWeb3 } from '../../hooks';
 import { Input, Select, Submit } from '../form';
 
 interface FormData {
-  criteria: string;
+  criteria?: string;
   amount: string;
 }
 
@@ -59,7 +59,7 @@ export default function DonorForm() {
       <Box
         as={'form'}
         mt={10}
-        onSubmit={handleSubmit((rawData) => {
+        onSubmit={handleSubmit(async (rawData) => {
           if (!user) {
             alert('Please sign in to donate');
             return;
@@ -69,14 +69,15 @@ export default function DonorForm() {
           const donation: Donation = {
             id: uid(),
             userId: user.id,
-            criteria: [data.criteria],
+            criteria: data.criteria ? [data.criteria] : [],
             amount: parseFloat(data.amount),
             contractAddress: 'TODO',
             contractId: 'TODO',
             status: 'pending'
           };
-          fetchApi({ path: '/donor/donate', payload: { donation } });
+          await fetchApi({ path: '/donor/donate', payload: { donation } });
           alert('Donation submitted! Thank you for your support');
+          location.reload();
         })}
       >
         <Stack spacing={4}>

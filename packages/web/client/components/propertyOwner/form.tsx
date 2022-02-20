@@ -1,10 +1,35 @@
 import 'react-dates/initialize';
 
 import { Box, Heading, Stack, Text } from '@chakra-ui/react';
+import { useForm } from 'react-hook-form';
 
+import { useUser } from '../../hooks';
 import { Input, Select, Submit } from '../form';
+import { Property } from '@teamzero/types';
+import uid from '@teamzero/common/uid';
+import { fetchApi } from '../../fetchApi';
+
+interface FormData {
+  address: string;
+  zipcode: string;
+  city: string;
+  state: string;
+  rooms: string;
+  hourlyRate: string;
+  hoursThreeRate: string;
+  hoursSixRate: string;
+  dayRate: string;
+}
 
 export default function PropertyOwnerForm() {
+  const { user } = useUser();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm();
+
   return (
     <Stack
       bg={'gray.50'}
@@ -37,22 +62,82 @@ export default function PropertyOwnerForm() {
           property owners like you.
         </Text>
       </Stack>
-      <Box as={'form'} mt={10}>
+      <Box
+        as={'form'}
+        mt={10}
+        onSubmit={handleSubmit(async (rawData) => {
+          if (!user) {
+            alert('Please sign in to donate');
+            return;
+          }
+          const data = rawData as FormData;
+          const property: Property = {
+            id: uid(),
+            userId: user.id,
+            address: data.address,
+            zipcode: data.zipcode,
+            city: data.city,
+            state: data.state,
+            rooms: parseInt(data.rooms),
+            hourlyRate: parseFloat(data.hourlyRate),
+            hours3Rate: parseFloat(data.hoursThreeRate),
+            hours6rate: parseFloat(data.hoursSixRate),
+            dayRate: parseFloat(data.dayRate)
+          };
+          console.log(property);
+          await fetchApi({
+            path: '/propertyOwner/listProperty',
+            payload: { property }
+          });
+          alert('Property listed! Thank you for your support');
+          location.reload();
+        })}
+      >
         <Stack spacing={4}>
-          <Select placeholder="Allowed Criteria">
-            <option value="hasFamilyMember">Has family members</option>
-            <option value="homelessSinceMoreThan3Months">
-              Homeless since more than 3 months
-            </option>
-            <option value="hasADisability">Has a disability</option>
-          </Select>
-          {/* TODO: Add a map / location picker */}
-          {/* TODO: Name of place */}
-          {/* TODO: Description of place */}
-          {/* TODO: Picture of place */}
+          <Input
+            type="text"
+            placeholder="Address"
+            {...register('address', { required: true })}
+          />
+          <Input
+            type="text"
+            placeholder="Zipcode"
+            {...register('zipcode', { required: true })}
+          />
+          <Input
+            type="text"
+            placeholder="City"
+            {...register('city', { required: true })}
+          />
+          <Input
+            type="text"
+            placeholder="State"
+            {...register('state', { required: true })}
+          />
+          <Input
+            type="number"
+            placeholder="Rooms"
+            {...register('rooms', { required: true })}
+          />
           <Input
             type="number"
             placeholder="Desired Hourly Rate (please be considerate)"
+            {...register('hourlyRate', { required: true })}
+          />
+          <Input
+            type="number"
+            placeholder="Desired 3 Hours Rate (please be considerate)"
+            {...register('hoursThreeRate', { required: true })}
+          />
+          <Input
+            type="number"
+            placeholder="Desired 6 Hours Rate (please be considerate)"
+            {...register('hoursSixRate', { required: true })}
+          />
+          <Input
+            type="number"
+            placeholder="Desired Day Rate (please be considerate)"
+            {...register('dayRate', { required: true })}
           />
         </Stack>
         <Submit value="List Housing" />
