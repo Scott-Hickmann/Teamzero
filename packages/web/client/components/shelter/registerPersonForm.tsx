@@ -1,13 +1,13 @@
 import 'react-dates/initialize';
 
 import { Box, Heading, HStack, Stack, Text } from '@chakra-ui/react';
+import uid from '@teamzero/common/uid';
+import { ShelterPerson } from '@teamzero/types';
 import { useForm } from 'react-hook-form';
 
-import { useUser, useWeb3 } from '../../hooks';
-import { Input, Select, Submit } from '../form';
-import { ShelterPerson } from '@teamzero/types';
 import { fetchApi } from '../../fetchApi';
-import uid from '@teamzero/common/uid';
+import { useUser } from '../../hooks';
+import { Input, Select, Submit } from '../form';
 
 interface FormData {
   firstName: string;
@@ -18,9 +18,6 @@ interface FormData {
 
 export default function RegisterShelterPersonForm() {
   const { user } = useUser();
-
-  const { account } = useWeb3();
-  console.log(account);
 
   const {
     register,

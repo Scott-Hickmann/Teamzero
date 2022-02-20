@@ -19,7 +19,10 @@ export interface User {
 
 export type DonationStatus = 'pending' | 'verified' | 'complete';
 
-export type Criteria = string; // TODO: Add criteria here
+export type Criteria =
+  | 'hasFamilyMember'
+  | 'homelessSinceMoreThan3Months'
+  | 'hasADisability';
 
 export interface Donation {
   id: string;

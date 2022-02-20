@@ -8,7 +8,6 @@ import { useApi } from './useApi';
 export function useUser() {
   const serverId = useContext(UserIdContext);
   const { data: session } = useSession();
-  console.log(session);
   const userId = session?.user?.name ?? serverId ?? undefined;
   const { data: userData, mutate: mutateUser } = useApi<
     { data: { user: User } },
