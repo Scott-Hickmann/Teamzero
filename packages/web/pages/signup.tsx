@@ -186,7 +186,7 @@ export default function Signin({ providers }: SignupProps): ReactElement {
         <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
           <Stack align={'center'}>
             <Heading fontSize={'4xl'} textAlign={'center'} w="md">
-              Sign up to Teamzero
+              Sign up to H O M E
             </Heading>
             <Text fontSize={'lg'} color={'gray.500'}>
               to help those in need of housing
