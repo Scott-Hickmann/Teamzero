@@ -1,13 +1,11 @@
-import { Box, Heading, HStack, Stack, Text, Checkbox, CheckboxGroup } from '@chakra-ui/react';
+import { Box, Heading, Stack, Text } from '@chakra-ui/react';
 import uid from '@teamzero/common/uid';
 import { Donation } from '@teamzero/types';
-import { useEffect } from 'react';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { fetchApi } from '../../fetchApi';
 import { useUser, useWeb3 } from '../../hooks';
-import { Input, Select, Submit } from '../form';
+import { Checkbox, Input, Submit } from '../form';
 
 interface FormData {
   criteria?: string;
@@ -81,9 +79,18 @@ export default function DonorForm() {
         })}
       >
         <Stack spacing={4}>
-        <Checkbox textColor={"#000"} colorScheme="whiteAlpha" borderColor={"#000"} {...register('criteria')} value={"hasFamilyMember"}>Has a family fember</Checkbox>
-        <Checkbox textColor={"#000"} borderColor={"#000"} {...register('criteria')} value={"homelessSinceMoreThan3Months"}>Homeless since more than three months</Checkbox>
-        <Checkbox textColor={"#000"} borderColor={"#000"} {...register('criteria')} value="hasADisability">Has a disability</Checkbox>
+          <Checkbox {...register('criteria')} value={'hasFamilyMember'}>
+            Has a family fember
+          </Checkbox>
+          <Checkbox
+            {...register('criteria')}
+            value={'homelessSinceMoreThan3Months'}
+          >
+            Homeless since more than three months
+          </Checkbox>
+          <Checkbox {...register('criteria')} value="hasADisability">
+            Has a disability
+          </Checkbox>
 
           <Input
             type="number"
