@@ -20,7 +20,7 @@ export default withAuth(async function handler(
   }
   const matchDoc = await MatchModel.findOneAndUpdate(
     { id: matchId, shelterId: userId },
-    { shelterStatus: 'accepted' }
+    { shelterStatus: 'paid', propertyOwnerStatus: 'paid' }
   );
   if (!matchDoc) {
     res.status(200).json({ success: false, error: 'Invalid match' });

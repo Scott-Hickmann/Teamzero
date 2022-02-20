@@ -1,12 +1,8 @@
-import { useEffect } from 'react';
+import { useRef } from 'react';
 import Web3 from 'web3';
 
-let web3: Web3;
-
 export function useWeb3() {
-  useEffect(() => {
-    web3 = new Web3(Web3.givenProvider || 'http://localhost:7545');
-  }, []);
+  const web3 = useRef(new Web3(Web3.givenProvider || 'http://localhost:7545'));
 
-  return { web3 };
+  return { web3: web3.current };
 }

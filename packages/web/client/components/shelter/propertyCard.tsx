@@ -10,6 +10,7 @@ import {
 import { useSWRConfig } from 'swr';
 
 import { fetchApi } from '../../fetchApi';
+import { useWeb3 } from '../../hooks';
 
 export interface PropertyCardProps {
   matchId: string;
@@ -21,6 +22,7 @@ export interface PropertyCardProps {
   personLastName: string;
   price: number;
   responded?: boolean;
+  paid?: boolean;
 }
 
 export default function PropertyCard({
@@ -32,8 +34,11 @@ export default function PropertyCard({
   personFirstName,
   personLastName,
   price,
-  responded
+  responded,
+  paid
 }: PropertyCardProps) {
+  const { web3 } = useWeb3();
+
   const { mutate } = useSWRConfig();
 
   const reject = async () => {
@@ -56,6 +61,39 @@ export default function PropertyCard({
       mutate('/shelter/getMatches');
       alert('Match accepted');
     }
+  };
+
+  const pay = async () => {
+    let accounts: string[];
+    try {
+      accounts = await web3.eth.requestAccounts();
+    } catch (error) {
+      alert('Please install a blockchain wallet.');
+      return;
+    }
+    if (!accounts[0]) {
+      alert('Please setup an account on your wallet.');
+      return;
+    }
+    const { success, error } = await fetchApi<
+      { success: boolean; error?: string },
+      { matchId: string }
+    >({ path: '/shelter/viewDonation', payload: { matchId } });
+    if (!success) {
+      alert(error ?? 'An error occurred');
+      return;
+    }
+    // TODO: Pay with smart contract
+    const { success: success2, error: error2 } = await fetchApi<
+      { success: boolean; error?: string },
+      { matchId: string }
+    >({ path: '/shelter/payMatch', payload: { matchId } });
+    if (!success2) {
+      alert(error2 ?? 'An error occurred');
+      return;
+    }
+    mutate('/shelter/getMatches');
+    alert('Match paid! Please let the person know');
   };
 
   return (
@@ -104,6 +142,20 @@ export default function PropertyCard({
               onClick={accept}
             >
               Accept
+            </Button>
+          </Stack>
+        )}
+        {paid != null && (
+          <Stack mt={6} direction={'row'} spacing={4}>
+            <Button
+              flex={1}
+              fontSize={'sm'}
+              rounded={'full'}
+              colorScheme={paid ? 'green' : 'yellow'}
+              disabled={paid}
+              onClick={pay}
+            >
+              {paid ? 'Paid' : 'Pay'}
             </Button>
           </Stack>
         )}

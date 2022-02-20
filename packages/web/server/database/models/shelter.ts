@@ -7,7 +7,8 @@ const schema = new Schema<Shelter>({
   address: { type: String, required: true },
   zipcode: { type: String, required: true },
   city: { type: String, required: true },
-  state: { type: String, required: true }
+  state: { type: String, required: true },
+  walletAddress: { type: String, required: true }
 });
 
 // eslint-disable-next-line @typescript-eslint/ban-types

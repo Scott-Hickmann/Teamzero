@@ -5,6 +5,7 @@ export function splitMatches(matches: Match[], type: UserType) {
   const acceptedMatches: Match[] = [];
   const rejectedMatches: Match[] = [];
   const completedMatches: Match[] = [];
+  const paidMatches: Match[] = [];
   matches.forEach((match) => {
     const myStatus =
       type === 'propertyOwner'
@@ -16,6 +17,8 @@ export function splitMatches(matches: Match[], type: UserType) {
         : match.propertyOwnerStatus;
     if (myStatus === 'rejected' || otherStatus === 'rejected') {
       rejectedMatches.push(match);
+    } else if (myStatus === 'paid' && otherStatus === 'paid') {
+      paidMatches.push(match);
     } else if (myStatus === 'accepted' && otherStatus === 'accepted') {
       completedMatches.push(match);
     } else if (myStatus === 'accepted' && otherStatus === 'pending') {
@@ -24,5 +27,11 @@ export function splitMatches(matches: Match[], type: UserType) {
       pendingMatches.push(match);
     }
   });
-  return { pendingMatches, acceptedMatches, rejectedMatches, completedMatches };
+  return {
+    pendingMatches,
+    acceptedMatches,
+    rejectedMatches,
+    completedMatches,
+    paidMatches
+  };
 }

@@ -30,12 +30,50 @@ import { ReactElement, useEffect, useState } from 'react';
 
 import Layout from '../client/components/layout';
 import { fetchApi } from '../client/fetchApi';
+import { useWeb3 } from '../client/hooks';
 import { signinCallbacks } from '../client/signinCallbacks';
 
 type PromiseResolvedType<T> = T extends Promise<infer R> ? R : never;
 
 interface SignupProps {
   providers: PromiseResolvedType<ReturnType<typeof getProviders>>;
+}
+
+interface WalletGetterProps {
+  walletAddress: string;
+  setWalletAddress: (newAddress: string) => void;
+}
+
+function WalletGetter({ walletAddress, setWalletAddress }: WalletGetterProps) {
+  const { web3 } = useWeb3();
+
+  useEffect(() => {
+    const load = async () => {
+      let accounts: string[];
+      try {
+        accounts = await web3.eth.requestAccounts();
+      } catch (error) {
+        console.log(error);
+        alert('Please install a blockchain wallet.');
+        return;
+      }
+      const account = accounts[0];
+      if (!account) {
+        alert('Please setup an account on your wallet.');
+        return;
+      }
+      setWalletAddress(account);
+    };
+
+    load();
+  }, []);
+
+  return (
+    <FormControl>
+      <FormLabel>Wallet Address</FormLabel>
+      <Input type="text" value={walletAddress} disabled />
+    </FormControl>
+  );
 }
 
 export default function Signin({ providers }: SignupProps): ReactElement {
@@ -52,6 +90,7 @@ export default function Signin({ providers }: SignupProps): ReactElement {
   const [zipcode, setZipcode] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
+  const [walletAddress, setWalletAddress] = useState('');
 
   const [error, setError] = useState<string>();
 
@@ -104,11 +143,15 @@ export default function Signin({ providers }: SignupProps): ReactElement {
         setError('Please enter a valid state.');
         return;
       }
+      if (walletAddress === '') {
+        setError('Please enter a valid state.');
+        return;
+      }
     }
     setError('');
     const shelter =
       type === 'shelter'
-        ? { name: shelterName, address, zipcode, city, state }
+        ? { name: shelterName, address, zipcode, city, state, walletAddress }
         : undefined;
     try {
       await fetchApi({
@@ -251,6 +294,10 @@ export default function Signin({ providers }: SignupProps): ReactElement {
                       onChange={(event) => setState(event.target.value)}
                     />
                   </FormControl>
+                  <WalletGetter
+                    walletAddress={walletAddress}
+                    setWalletAddress={setWalletAddress}
+                  />
                 </>
               )}
               <Stack spacing={10} pt={2}>

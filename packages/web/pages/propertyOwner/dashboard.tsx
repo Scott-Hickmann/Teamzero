@@ -28,9 +28,13 @@ export default function OwnerDashboard() {
     properties: {}
   };
 
-
-  const { pendingMatches, acceptedMatches, rejectedMatches, completedMatches } =
-    splitMatches(matches, 'propertyOwner');
+  const {
+    pendingMatches,
+    acceptedMatches,
+    rejectedMatches,
+    completedMatches,
+    paidMatches
+  } = splitMatches(matches, 'propertyOwner');
 
   const pendingMatchCards = pendingMatches.map((match) => (
     <PersonCard
@@ -79,6 +83,18 @@ export default function OwnerDashboard() {
     />
   ));
 
+  const paidMatchCards = paidMatches.map((match) => (
+    <PersonCard
+      key={match.id}
+      matchId={match.id}
+      firstName={shelterPersons[match.shelterPersonId].firstName}
+      lastName={shelterPersons[match.shelterPersonId].lastName}
+      address={properties[match.propertyId].address}
+      price={properties[match.propertyId].hourlyRate}
+      responded
+    />
+  ));
+
   return (
     <Layout>
       <DashboardPage title="Pending Matches">{pendingMatchCards}</DashboardPage>
@@ -88,6 +104,7 @@ export default function OwnerDashboard() {
       <DashboardPage title="Complete Matches">
         {completeMatchCards}
       </DashboardPage>
+      <DashboardPage title="Paid Matches">{paidMatchCards}</DashboardPage>
       <DashboardPage title="Rejected Matches">
         {rejectedMatchCards}
       </DashboardPage>

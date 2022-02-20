@@ -65,6 +65,7 @@ export interface Shelter {
   zipcode: string;
   city: string;
   state: string;
+  walletAddress: string;
 }
 
 export interface ShelterPerson {
@@ -76,7 +77,7 @@ export interface ShelterPerson {
   criteria: Criteria[];
 }
 
-export type MatchStatus = 'pending' | 'accepted' | 'rejected';
+export type MatchStatus = 'pending' | 'accepted' | 'rejected' | 'paid';
 
 export interface Match {
   id: string;

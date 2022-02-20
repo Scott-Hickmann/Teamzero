@@ -1,7 +1,7 @@
 import { Box, Heading, Stack, Text } from '@chakra-ui/react';
 import { criteriaStringArrayToIntArray } from '@teamzero/common/criteria';
 import uid from '@teamzero/common/uid';
-import { Criteria, Donation } from '@teamzero/types';
+import { Criteria, Donation, Shelter } from '@teamzero/types';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { AbiItem } from 'web3-utils';
@@ -9,17 +9,33 @@ import { AbiItem } from 'web3-utils';
 import Micropayments from '../../../contracts/Micropayments.json';
 import { fetchApi } from '../../fetchApi';
 import { useUser, useWeb3 } from '../../hooks';
-import { Checkbox, Input, Submit } from '../form';
+import { useApi } from '../../hooks/useApi';
+import { Checkbox, Input, Select, Submit } from '../form';
 
 interface FormData {
   criteria?: Criteria[];
   amount: string;
+  shelterWalletAddress: string;
 }
 
 export default function DonorForm() {
-  const { user } = useUser();
-
   const { web3 } = useWeb3();
+
+  const { user } = useUser();
+  const { data: sheltersData } = useApi<{
+    data: {
+      shelters: Shelter[];
+    };
+  }>(
+    user
+      ? {
+          path: '/donor/getShelters'
+        }
+      : undefined
+  );
+  const { shelters } = sheltersData?.data ?? {
+    shelters: []
+  };
 
   const {
     register,
@@ -78,7 +94,6 @@ export default function DonorForm() {
             return;
           }
           const data = rawData as FormData;
-          // TODO: Sign transaction then post to api
           const donation: Donation = {
             id: uid(),
             userId: user.id,
@@ -89,7 +104,7 @@ export default function DonorForm() {
             status: 'pending'
           };
           const contractArguments = [
-            accounts[0],
+            data.shelterWalletAddress,
             2592000, // 30 days
             criteriaStringArrayToIntArray(donation.criteria),
             web3.utils.toWei(data.amount, 'ether').toString()
@@ -117,7 +132,11 @@ export default function DonorForm() {
               )
               .on('confirmation', () => undefined);
             donation.contractAddress = micropaymentsInstance.options.address;
-            await fetchApi({ path: '/donor/donate', payload: { donation } });
+            const { success, error } = await fetchApi<
+              { success: boolean; error?: string },
+              { donation: Donation }
+            >({ path: '/donor/donate', payload: { donation } });
+            if (!success) throw error ?? 'An error occurred';
             return micropaymentsInstance.options.address;
           };
           const deploySmartContractPromise = deploySmartContract();
@@ -159,13 +178,19 @@ export default function DonorForm() {
           <Checkbox {...register('criteria')} value="hasADisability">
             Has a disability
           </Checkbox>
-
           <Input
             type="number"
             placeholder="Amount (ETH)"
             step="0.00000001"
             {...register('amount', { required: true })}
           />
+          <Select {...register('shelterWalletAddress', { required: true })}>
+            {shelters.map((shelter) => (
+              <option key={shelter.userId} value={shelter.walletAddress}>
+                {shelter.name}
+              </option>
+            ))}
+          </Select>
         </Stack>
         <Submit value="Donate" />
       </Box>

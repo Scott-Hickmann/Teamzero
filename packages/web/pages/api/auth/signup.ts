@@ -51,7 +51,8 @@ export default async function handler(
       address: rawShelter.address,
       zipcode: rawShelter.zipcode,
       city: rawShelter.city,
-      state: rawShelter.state
+      state: rawShelter.state,
+      walletAddress: rawShelter.walletAddress
     };
   }
   let hash: string;
