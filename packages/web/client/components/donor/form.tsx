@@ -1,4 +1,4 @@
-import { Box, Heading, HStack, Stack, Text } from '@chakra-ui/react';
+import { Box, Heading, HStack, Stack, Text, Checkbox, CheckboxGroup } from '@chakra-ui/react';
 import uid from '@teamzero/common/uid';
 import { Donation } from '@teamzero/types';
 import { useEffect } from 'react';
@@ -81,13 +81,10 @@ export default function DonorForm() {
         })}
       >
         <Stack spacing={4}>
-          <Select placeholder="Donation Criteria" {...register('criteria')}>
-            <option value="hasFamilyMember">Has family members</option>
-            <option value="homelessSinceMoreThan3Months">
-              Homeless since more than 3 months
-            </option>
-            <option value="hasADisability">Has a disability</option>
-          </Select>
+        <Checkbox textColor={"#000"} colorScheme="whiteAlpha" borderColor={"#000"} {...register('criteria')} value={"hasFamilyMember"}>Has a family fember</Checkbox>
+        <Checkbox textColor={"#000"} borderColor={"#000"} {...register('criteria')} value={"homelessSinceMoreThan3Months"}>Homeless since more than three months</Checkbox>
+        <Checkbox textColor={"#000"} borderColor={"#000"} {...register('criteria')} value="hasADisability">Has a disability</Checkbox>
+
           <Input
             type="number"
             placeholder="Amount (Crypto)"

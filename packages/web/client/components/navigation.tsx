@@ -34,7 +34,8 @@ const links: Record<UserType | 'anonymous', ILink[]> = {
   donor: [{ title: 'Donate', href: '/donor/donate' }],
   propertyOwner: [
     { title: 'Property Dashboard', href: '/propertyOwner/dashboard' },
-    { title: 'List Property', href: '/propertyOwner/listProperty' }
+    { title: 'List Property', href: '/propertyOwner/listProperty' },
+    { title: 'Manage Properties', href: '/propertyOwner/manageProperties' }
   ],
   shelter: [
     { title: 'Shelter Dashboard', href: '/shelter/dashboard' },
@@ -89,7 +90,7 @@ export default function Navigation() {
           onClick={isOpen ? onClose : onOpen}
         />
         <HStack spacing={8} alignItems={'center'}>
-          <Box fontWeight="bold">Teamzero</Box>
+          <Box fontWeight="bold">H O M E</Box>
           <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
             {userLinks.map((link) => (
               <NavLink key={link.title} link={link} />
