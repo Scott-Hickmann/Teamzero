@@ -124,3 +124,6 @@ adExample*.jpg
 packages/content/*
 !packages/content/extension
 !packages/content/extension/*
+
+# Custom=
+packages/web/pages/api/test.ts

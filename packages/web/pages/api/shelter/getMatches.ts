@@ -1,7 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { withAuth } from '../../../server/auth';
-import { UserModel } from '../../../server/database/models';
+import { documentToObject } from '../../../server/database';
+import {
+  MatchModel,
+  PropertyModel,
+  ShelterPersonModel,
+  UserModel
+} from '../../../server/database/models';
 
 export default withAuth(async function handler(
   req: NextApiRequest,
@@ -13,6 +19,31 @@ export default withAuth(async function handler(
     res.status(200).json({ success: false, error: 'Invalid user' });
     return;
   }
-  // TODO: Get matches
-  res.json({ success: true, data: {} });
+  const matchDocs = await MatchModel.find({ shelterId: userId });
+  const matches = matchDocs.map((matchDoc) => documentToObject(matchDoc));
+  const shelterPersons = Object.fromEntries(
+    (
+      await Promise.all(
+        matches.map((match) => {
+          return ShelterPersonModel.findOne({ id: match.shelterPersonId });
+        })
+      )
+    ).flatMap((shelterPersonDoc) =>
+      shelterPersonDoc
+        ? [[shelterPersonDoc.id, documentToObject(shelterPersonDoc)]]
+        : []
+    )
+  );
+  const properties = Object.fromEntries(
+    (
+      await Promise.all(
+        matches.map((match) => {
+          return PropertyModel.findOne({ id: match.propertyId });
+        })
+      )
+    ).flatMap((propertyDoc) =>
+      propertyDoc ? [[propertyDoc.id, documentToObject(propertyDoc)]] : []
+    )
+  );
+  res.json({ success: true, data: { matches, shelterPersons, properties } });
 });

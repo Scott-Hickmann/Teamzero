@@ -114,7 +114,10 @@ export default function Navigation() {
                 </Text>
               </MenuButton>
               <MenuList>
-                <MenuItem color="red" onClick={() => signOut()}>
+                <MenuItem
+                  color="red"
+                  onClick={() => signOut({ callbackUrl: '/' })}
+                >
                   Sign Out
                 </MenuItem>
               </MenuList>

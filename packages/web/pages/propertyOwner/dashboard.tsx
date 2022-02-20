@@ -1,55 +1,90 @@
-import { useState } from 'react';
+import { splitMatches } from '@teamzero/common/splitMatches';
+import { Match, Property, ShelterPerson } from '@teamzero/types';
+
 import DashboardPage from '../../client/components/dashboardPage';
 import Layout from '../../client/components/layout';
 import PersonCard from '../../client/components/propertyOwner/personCard';
+import { useUser } from '../../client/hooks';
+import { useApi } from '../../client/hooks/useApi';
 
 export default function OwnerDashboard() {
-  const [people, setPeople] = useState([
-    {id:'1',shelter:'Hamilton Families Shelter', firstName: 'John', lastName: 'Doe', description: 'Lorel ipsum',time:"Feb 20, 10:00 PM - Feb 21, 8:00 AM", price:"$10", accepted:false},
-    {id:'2',shelter:'Hamilton Families Shelter', firstName: 'Jane', lastName: 'Doe', description: 'Lorel ipsum',time:"Feb 20, 10:00 PM - Feb 21, 8:00 AM", price:"$20", accepted:true}])
-  const acceptedPeople = people.filter(user => user.accepted).map((user) =>
-          <PersonCard
-                  shelterName={user.shelter}
-                  firstName={user.firstName}
-                  lastName={user.lastName}
-                  description={user.description}
-                  timeOfStay={user.time}
-                  price={user.price}
-                  accepted={user.accepted}
-                />
+  const { user } = useUser();
+  const { data: matchesData } = useApi<{
+    data: {
+      matches: Match[];
+      shelterPersons: Record<string, ShelterPerson>;
+      properties: Record<string, Property>;
+    };
+  }>(
+    user
+      ? {
+          path: '/propertyOwner/getMatches'
+        }
+      : undefined
   );
-    const rejectedPeople = people.filter(user => user.accepted==false).map((user) =>
-      <PersonCard
-      shelterName={user.shelter}
-      firstName={user.firstName}
-      lastName={user.lastName}
-      description={user.description}
-      timeOfStay={user.time}
-      price={user.price}
-      accepted={user.accepted}
+  const { matches, shelterPersons, properties } = matchesData?.data ?? {
+    matches: [],
+    shelterPersons: {},
+    properties: {}
+  };
+
+  const { pendingMatches, acceptedMatches, rejectedMatches, completedMatches } =
+    splitMatches(matches, 'propertyOwner');
+
+  const pendingMatchCards = pendingMatches.map((match) => (
+    <PersonCard
+      key={match.id}
+      firstName={shelterPersons[match.shelterPersonId].firstName}
+      lastName={shelterPersons[match.shelterPersonId].lastName}
+      address={properties[match.propertyId].address}
+      price={properties[match.propertyId].hourlyRate}
     />
-    );
-    const pendingPeople = people.filter(user => user.accepted==undefined).map((user) =>
-      <PersonCard
-      shelterName={user.shelter}
-      firstName={user.firstName}
-      lastName={user.lastName}
-      description={user.description}
-      timeOfStay={user.time}
-      price={user.price}
-      accepted={user.accepted}
+  ));
+
+  const acceptedMatchCards = acceptedMatches.map((match) => (
+    <PersonCard
+      key={match.id}
+      firstName={shelterPersons[match.shelterPersonId].firstName}
+      lastName={shelterPersons[match.shelterPersonId].lastName}
+      address={properties[match.propertyId].address}
+      price={properties[match.propertyId].hourlyRate}
+      responded
     />
-    );
+  ));
+
+  const rejectedMatchCards = rejectedMatches.map((match) => (
+    <PersonCard
+      key={match.id}
+      firstName={shelterPersons[match.shelterPersonId].firstName}
+      lastName={shelterPersons[match.shelterPersonId].lastName}
+      address={properties[match.propertyId].address}
+      price={properties[match.propertyId].hourlyRate}
+      responded
+    />
+  ));
+
+  const completeMatchCards = completedMatches.map((match) => (
+    <PersonCard
+      key={match.id}
+      firstName={shelterPersons[match.shelterPersonId].firstName}
+      lastName={shelterPersons[match.shelterPersonId].lastName}
+      address={properties[match.propertyId].address}
+      price={properties[match.propertyId].hourlyRate}
+      responded
+    />
+  ));
+
   return (
     <Layout>
-      <DashboardPage title="Pending Matches">
-        {pendingPeople}
+      <DashboardPage title="Pending Matches">{pendingMatchCards}</DashboardPage>
+      <DashboardPage title="Waiting for Other Party">
+        {acceptedMatchCards}
       </DashboardPage>
-      <DashboardPage title="Accepted Matches">
-        {acceptedPeople}
+      <DashboardPage title="Complete Matches">
+        {completeMatchCards}
       </DashboardPage>
-      <DashboardPage title='Rejected Matches'>
-      {rejectedPeople}
+      <DashboardPage title="Rejected Matches">
+        {rejectedMatchCards}
       </DashboardPage>
     </Layout>
   );

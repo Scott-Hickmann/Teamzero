@@ -2,8 +2,7 @@ import { Shelter } from '@teamzero/types';
 import { Model, model, models, Schema } from 'mongoose';
 
 const schema = new Schema<Shelter>({
-  id: { type: String, required: true, unique: true },
-  userId: { type: String, required: true },
+  userId: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   address: { type: String, required: true },
   zipcode: { type: String, required: true },

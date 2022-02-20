@@ -9,23 +9,19 @@ import {
 } from '@chakra-ui/react';
 
 export interface PersonCardProps {
-  shelterName: string;
   firstName: string;
   lastName: string;
-  description: string;
-  timeOfStay: string;
-  price: string;
-  accepted: boolean | undefined;
+  address: string;
+  price: number;
+  responded?: boolean;
 }
 
 export default function PersonCard({
-  shelterName,
   firstName,
   lastName,
-  description,
-  timeOfStay,
+  address,
   price,
-  accepted
+  responded
 }: PersonCardProps) {
   return (
     <Center py={6}>
@@ -39,15 +35,6 @@ export default function PersonCard({
         overflow={'hidden'}
       >
         <Stack>
-          <Text
-            color={'green.500'}
-            textTransform={'uppercase'}
-            fontWeight={800}
-            fontSize={'sm'}
-            letterSpacing={1.1}
-          >
-            {shelterName}
-          </Text>
           <Heading
             color={useColorModeValue('gray.700', 'white')}
             fontSize={'2xl'}
@@ -55,54 +42,29 @@ export default function PersonCard({
           >
             {firstName} {lastName}
           </Heading>
-          <Text color={'gray.500'}>{description}</Text>
-          <Text fontWeight={600}>{price}</Text>
-          <Text color={'gray.500'}>{timeOfStay}</Text>
+          <Text color={'gray.500'}>Match for: {address}</Text>
+          <Text fontWeight={600}>${price}</Text>
         </Stack>
-        <Stack mt={6} direction={'row'} spacing={4}>
-          {accepted == undefined ? (
-            <>
-              <Button
-                flex={1}
-                fontSize={'sm'}
-                rounded={'full'}
-                colorScheme={'red'}
-              >
-                Decline
-              </Button>
-              <Button
-                flex={1}
-                fontSize={'sm'}
-                rounded={'full'}
-                colorScheme={'green'}
-              >
-                Accept
-              </Button>
-            </>
-          ) : accepted ? (
-            <Button
-              flex={1}
-              fontSize={'sm'}
-              rounded={'full'}
-              colorScheme={'green'}
-              disabled
-              css={{ ':disabled': { opacity: 1 } }}
-            >
-              Accepted
-            </Button>
-          ) : (
+        {!responded && (
+          <Stack mt={6} direction={'row'} spacing={4}>
             <Button
               flex={1}
               fontSize={'sm'}
               rounded={'full'}
               colorScheme={'red'}
-              disabled
-              css={{ ':disabled': { opacity: 1 } }}
             >
-              Declined
+              Decline
             </Button>
-          )}
-        </Stack>
+            <Button
+              flex={1}
+              fontSize={'sm'}
+              rounded={'full'}
+              colorScheme={'green'}
+            >
+              Accept
+            </Button>
+          </Stack>
+        )}
       </Box>
     </Center>
   );

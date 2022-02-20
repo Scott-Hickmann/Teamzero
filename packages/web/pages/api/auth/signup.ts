@@ -46,7 +46,6 @@ export default async function handler(
   if (rawShelter) {
     // TODO: Validate shelter
     shelter = {
-      id: uid(),
       userId: id,
       name: rawShelter.name,
       address: rawShelter.address,

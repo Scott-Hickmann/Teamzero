@@ -56,7 +56,6 @@ export interface Property {
 }
 
 export interface Shelter {
-  id: string;
   userId: string;
   name: string;
   address: string;
@@ -72,4 +71,17 @@ export interface ShelterPerson {
   lastName: string;
   email?: string;
   criteria: Criteria[];
+}
+
+export type MatchStatus = 'pending' | 'accepted' | 'rejected';
+
+export interface Match {
+  id: string;
+  donationIds: string[];
+  shelterPersonId: string;
+  propertyId: string;
+  shelterId: string;
+  propertyOwnerId: string;
+  shelterStatus: MatchStatus;
+  propertyOwnerStatus: MatchStatus;
 }

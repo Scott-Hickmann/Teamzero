@@ -1,30 +1,10 @@
 import 'react-dates/initialize';
 
-import {
-  Box,
-  FormControl,
-  FormLabel,
-  Heading,
-  HStack,
-  Stack,
-  Text
-} from '@chakra-ui/react';
-import { useState } from 'react';
-import { DateRangePicker, Range, RangeKeyDict } from 'react-date-range';
+import { Box, Heading, Stack, Text } from '@chakra-ui/react';
 
 import { Input, Select, Submit } from '../form';
 
 export default function PropertyOwnerForm() {
-  const [dateRange, setDateRange] = useState<Range>({
-    startDate: new Date(),
-    endDate: new Date(),
-    key: 'selection'
-  });
-
-  const handleDateRangeSelect = (ranges: RangeKeyDict) => {
-    setDateRange(ranges.selection);
-  };
-
   return (
     <Stack
       bg={'gray.50'}
@@ -66,16 +46,6 @@ export default function PropertyOwnerForm() {
             </option>
             <option value="hasADisability">Has a disability</option>
           </Select>
-          <FormControl color="black">
-            <FormLabel htmlFor="dateRange">Date Range</FormLabel>
-            {/* TODO: Make this a popup */}
-            <Box id="dateRange" color="black">
-              <DateRangePicker
-                ranges={[dateRange]}
-                onChange={handleDateRangeSelect}
-              />
-            </Box>
-          </FormControl>
           {/* TODO: Add a map / location picker */}
           {/* TODO: Name of place */}
           {/* TODO: Description of place */}
