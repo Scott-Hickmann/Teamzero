@@ -11,7 +11,6 @@ import { useUser } from '../../client/hooks';
 import { useApi } from '../../client/hooks/useApi';
 
 export default function Test() {
-  const { user } = useUser();
   const [addMatches, setAddMatches] = useState(false);
   const { data: matchesData } = useApi<{
     data: {
@@ -19,13 +18,9 @@ export default function Test() {
       viewPeople: ShelterPerson[];
       viewproperties: Property[];
     };
-  }>(
-    user
-      ? {
-          path: '/matchTest'
-        }
-      : undefined
-  );
+  }>({
+    path: '/matchTest'
+  });
   const { viewDonations, viewPeople, viewproperties } = matchesData?.data ?? {
     viewDonations: [],
     viewPeople: [],

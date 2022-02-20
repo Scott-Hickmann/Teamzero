@@ -2,18 +2,19 @@ import 'react-dates/initialize';
 
 import { Box, Heading, HStack, Stack, Text } from '@chakra-ui/react';
 import uid from '@teamzero/common/uid';
-import { ShelterPerson } from '@teamzero/types';
+import { Criteria, ShelterPerson } from '@teamzero/types';
 import { useForm } from 'react-hook-form';
 
 import { fetchApi } from '../../fetchApi';
 import { useUser } from '../../hooks';
-import { Input, Select, Submit } from '../form';
+import { Checkbox, Input, Submit } from '../form';
+import { toast } from 'react-toastify';
 
 interface FormData {
   firstName: string;
   lastName: string;
   email?: string;
-  criteria?: string;
+  criteria: Criteria[];
 }
 
 export default function RegisterShelterPersonForm() {
@@ -59,7 +60,9 @@ export default function RegisterShelterPersonForm() {
         mt={10}
         onSubmit={handleSubmit(async (rawData) => {
           if (!user) {
-            alert('Please sign in to donate');
+            toast.error('Please sign in to donate', {
+              position: 'bottom-right'
+            });
             return;
           }
           const data = rawData as FormData;
@@ -69,14 +72,15 @@ export default function RegisterShelterPersonForm() {
             firstName: data.firstName,
             lastName: data.lastName,
             ...(data.email ? { email: data.email } : {}),
-            criteria: data.criteria ? [data.criteria] : []
+            criteria: data.criteria ? data.criteria : []
           };
           await fetchApi({
             path: '/shelter/registerPerson',
             payload: { shelterPerson }
           });
-          alert('Person registered! Thank you for your support');
-          location.reload();
+          toast.success('Person registered! Thank you for your support!', {
+            position: 'bottom-right'
+          });
         })}
       >
         <Stack spacing={4}>
@@ -97,13 +101,18 @@ export default function RegisterShelterPersonForm() {
             placeholder="email@domain.com (Optional)"
             {...register('email')}
           />
-          <Select placeholder="Current Situation" {...register('criteria')}>
-            <option value="hasFamilyMember">Has family members</option>
-            <option value="homelessSinceMoreThan3Months">
-              Homeless since more than 3 months
-            </option>
-            <option value="hasADisability">Has a disability</option>
-          </Select>
+          <Checkbox {...register('criteria')} value="hasFamilyMember">
+            Has a family fember
+          </Checkbox>
+          <Checkbox
+            {...register('criteria')}
+            value="homelessSinceMoreThan3Months"
+          >
+            Homeless since more than three months
+          </Checkbox>
+          <Checkbox {...register('criteria')} value="hasADisability">
+            Has a disability
+          </Checkbox>
         </Stack>
         <Submit value="Register" />
       </Box>

@@ -7,6 +7,7 @@ import {
   Text,
   useColorModeValue
 } from '@chakra-ui/react';
+import { toast } from 'react-toastify';
 import { useSWRConfig } from 'swr';
 
 import { fetchApi } from '../../fetchApi';
@@ -37,7 +38,9 @@ export default function PersonCard({
     >({ path: '/propertyOwner/rejectMatch', payload: { matchId } });
     if (success) {
       mutate('/propertyOwner/getMatches');
-      alert('Match rejected');
+      toast.error('Match rejected', {
+        position: 'bottom-right'
+      });
     }
   };
 
@@ -48,7 +51,9 @@ export default function PersonCard({
     >({ path: '/propertyOwner/acceptMatch', payload: { matchId } });
     if (success) {
       mutate('/propertyOwner/getMatches');
-      alert('Match accepted');
+      toast.success('Match accepted', {
+        position: 'bottom-right'
+      });
     }
   };
 

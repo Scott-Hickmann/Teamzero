@@ -7,6 +7,7 @@ import {
   Text,
   useColorModeValue
 } from '@chakra-ui/react';
+import { toast } from 'react-toastify';
 import { useSWRConfig } from 'swr';
 
 import { fetchApi } from '../../fetchApi';
@@ -37,7 +38,9 @@ export default function ViewPropertyCard({
     >({ path: '/propertyOwner/deleteListing', payload: { propertyId } });
     if (success) {
       mutate('/propertyOwner/getAllProperties');
-      alert('Listing Removed');
+      toast.success('Listing Removed', {
+        position: 'bottom-right'
+      });
     }
   };
 

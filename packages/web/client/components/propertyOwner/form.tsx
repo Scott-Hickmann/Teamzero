@@ -1,13 +1,14 @@
 import 'react-dates/initialize';
 
 import { Box, Heading, Stack, Text } from '@chakra-ui/react';
-import { useForm } from 'react-hook-form';
-
-import { useUser } from '../../hooks';
-import { Input, Select, Submit } from '../form';
-import { Property } from '@teamzero/types';
 import uid from '@teamzero/common/uid';
+import { Property } from '@teamzero/types';
+import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
+
 import { fetchApi } from '../../fetchApi';
+import { useUser } from '../../hooks';
+import { Input, Submit } from '../form';
 
 interface FormData {
   address: string;
@@ -67,7 +68,9 @@ export default function PropertyOwnerForm() {
         mt={10}
         onSubmit={handleSubmit(async (rawData) => {
           if (!user) {
-            alert('Please sign in to donate');
+            toast.error('Please sign in to donate', {
+              position: 'bottom-right'
+            });
             return;
           }
           const data = rawData as FormData;
@@ -89,8 +92,9 @@ export default function PropertyOwnerForm() {
             path: '/propertyOwner/listProperty',
             payload: { property }
           });
-          alert('Property listed! Thank you for your support');
-          location.reload();
+          toast.success('Property listed! Thank you for your support', {
+            position: 'bottom-right'
+          });
         })}
       >
         <Stack spacing={4}>

@@ -32,6 +32,7 @@ import Layout from '../client/components/layout';
 import { fetchApi } from '../client/fetchApi';
 import { useWeb3 } from '../client/hooks';
 import { signinCallbacks } from '../client/signinCallbacks';
+import { toast } from 'react-toastify';
 
 type PromiseResolvedType<T> = T extends Promise<infer R> ? R : never;
 
@@ -54,12 +55,16 @@ function WalletGetter({ walletAddress, setWalletAddress }: WalletGetterProps) {
         accounts = await web3.eth.requestAccounts();
       } catch (error) {
         console.log(error);
-        alert('Please install a blockchain wallet.');
+        toast.error('Please install a blockchain wallet.', {
+          position: 'bottom-right'
+        });
         return;
       }
       const account = accounts[0];
       if (!account) {
-        alert('Please setup an account on your wallet.');
+        toast.error('Please setup an account on your wallet.', {
+          position: 'bottom-right'
+        });
         return;
       }
       setWalletAddress(account);

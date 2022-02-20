@@ -78,19 +78,25 @@ export default function DonorForm() {
         mt={10}
         onSubmit={handleSubmit(async (rawData) => {
           if (!user) {
-            alert('Please sign in to donate');
+            toast.error('Please sign in to donate', {
+              position: 'bottom-right'
+            });
             return;
           }
           let accounts: string[];
           try {
             accounts = await web3.eth.requestAccounts();
           } catch (error) {
-            alert('Please install a blockchain wallet.');
+            toast.error('Please install a blockchain wallet.', {
+              position: 'bottom-right'
+            });
             return;
           }
           const account = accounts[0];
           if (!account) {
-            alert('Please setup an account on your wallet.');
+            toast.error('Please setup an account on your wallet.', {
+              position: 'bottom-right'
+            });
             return;
           }
           const data = rawData as FormData;

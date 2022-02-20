@@ -55,7 +55,9 @@ export default function PropertyCard({
     >({ path: '/shelter/rejectMatch', payload: { matchId } });
     if (success) {
       mutate('/shelter/getMatches');
-      alert('Match rejected');
+      toast.error('Match rejected', {
+        position: 'bottom-right'
+      });
     }
   };
 
@@ -66,7 +68,9 @@ export default function PropertyCard({
     >({ path: '/shelter/acceptMatch', payload: { matchId } });
     if (success) {
       mutate('/shelter/getMatches');
-      alert('Match accepted');
+      toast.success('Match accepted', {
+        position: 'bottom-right'
+      });
     }
   };
 
@@ -75,12 +79,16 @@ export default function PropertyCard({
     try {
       accounts = await web3.eth.requestAccounts();
     } catch (error) {
-      alert('Please install a blockchain wallet.');
+      toast.error('Please install a blockchain wallet.', {
+        position: 'bottom-right'
+      });
       return;
     }
     const account = accounts[0];
     if (!account) {
-      alert('Please setup an account on your wallet.');
+      toast.error('Please setup an account on your wallet.', {
+        position: 'bottom-right'
+      });
       return;
     }
     const { success, data, error } = await fetchApi<
@@ -88,7 +96,9 @@ export default function PropertyCard({
       { matchId: string }
     >({ path: '/shelter/viewDonations', payload: { matchId } });
     if (!success) {
-      alert(error ?? 'An error occurred');
+      toast.error(error ?? 'An error occurred', {
+        position: 'bottom-right'
+      });
       return;
     }
     const donations = data.donations;
@@ -245,7 +255,7 @@ export default function PropertyCard({
               colorScheme={'yellow'}
               onClick={pay}
             >
-              Pay
+              Accept Donations and Pay Property
             </Button>
           </Stack>
         )}
