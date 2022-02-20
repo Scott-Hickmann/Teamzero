@@ -27,12 +27,12 @@ import NextLink from 'next/link';
 import { getProviders, signOut, useSession } from 'next-auth/react';
 import { signIn } from 'next-auth/react';
 import { ReactElement, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 import Layout from '../client/components/layout';
 import { fetchApi } from '../client/fetchApi';
 import { useWeb3 } from '../client/hooks';
 import { signinCallbacks } from '../client/signinCallbacks';
-import { toast } from 'react-toastify';
 
 type PromiseResolvedType<T> = T extends Promise<infer R> ? R : never;
 
