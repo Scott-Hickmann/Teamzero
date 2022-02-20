@@ -1,0 +1,13 @@
+name: 1-minute-cron
+on:
+  schedule:
+    - cron: '*/1 * * * *'
+jobs:
+  match:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Match
+        run: |
+          curl --request POST \
+          --url 'https://teamzero.vercel.app/api/match' \
+          --header 'Authorization: Bearer ${{ secrets.CRON_SECRET }}'
