@@ -1,0 +1,13 @@
+{
+  "name": "@teamzero/blockchain",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "migrate": "truffle migrate",
+    "test": "truffle test"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.5.0",
+    "nanoid": "^3.1.30"
+  }
+}

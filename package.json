@@ -5,12 +5,14 @@
   "private": true,
   "scripts": {
     "dev": "npm-run-all -p -l dev:*",
-    "dev:web": "yarn workspace @teamzero/web dev"
+    "dev:web": "yarn workspace @teamzero/web dev",
+    "syncContracts": "cp -a packages/blockchain/build/contracts/. packages/web/contracts/"
   },
   "workspaces": [
     "packages/types",
     "packages/common",
-    "packages/web"
+    "packages/web",
+    "packages/blockchain"
   ],
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.7.0",

@@ -1,22 +1,25 @@
 import { Box, Heading, Stack, Text } from '@chakra-ui/react';
+import { criteriaStringArrayToIntArray } from '@teamzero/common/criteria';
 import uid from '@teamzero/common/uid';
-import { Donation } from '@teamzero/types';
+import { Criteria, Donation } from '@teamzero/types';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
+import { AbiItem } from 'web3-utils';
 
+import Micropayments from '../../../contracts/Micropayments.json';
 import { fetchApi } from '../../fetchApi';
 import { useUser, useWeb3 } from '../../hooks';
 import { Checkbox, Input, Submit } from '../form';
 
 interface FormData {
-  criteria?: string;
+  criteria?: Criteria[];
   amount: string;
 }
 
 export default function DonorForm() {
   const { user } = useUser();
 
-  const { account } = useWeb3();
-  console.log(account);
+  const { web3 } = useWeb3();
 
   const {
     register,
@@ -62,29 +65,94 @@ export default function DonorForm() {
             alert('Please sign in to donate');
             return;
           }
+          let accounts: string[];
+          try {
+            accounts = await web3.eth.requestAccounts();
+          } catch (error) {
+            alert('Please install a blockchain wallet.');
+            return;
+          }
+          const account = accounts[0];
+          if (!account) {
+            alert('Please setup an account on your wallet.');
+            return;
+          }
           const data = rawData as FormData;
           // TODO: Sign transaction then post to api
           const donation: Donation = {
             id: uid(),
             userId: user.id,
-            criteria: data.criteria ? [data.criteria] : [],
+            criteria: data.criteria ? data.criteria : [],
             amount: parseFloat(data.amount),
-            contractAddress: 'TODO',
-            contractId: 'TODO',
+            contractAddress: '',
+            contractId: '',
             status: 'pending'
           };
-          await fetchApi({ path: '/donor/donate', payload: { donation } });
-          alert('Donation submitted! Thank you for your support');
-          location.reload();
+          const contractArguments = [
+            accounts[0],
+            2592000, // 30 days
+            criteriaStringArrayToIntArray(donation.criteria),
+            web3.utils.toWei(data.amount, 'ether').toString()
+          ];
+          const micropayments = new web3.eth.Contract(
+            Micropayments.abi as AbiItem[]
+          );
+          const deploySmartContract = async () => {
+            const micropaymentsInstance = await micropayments
+              .deploy({
+                data: Micropayments.bytecode,
+                arguments: contractArguments
+              })
+              .send(
+                {
+                  from: account,
+                  gas: 1500000,
+                  gasPrice: '3000000000'
+                },
+                (err, transactionHash) => {
+                  toast.info(`Pending transaction: ${transactionHash}`, {
+                    position: 'bottom-right'
+                  });
+                }
+              )
+              .on('confirmation', () => undefined);
+            donation.contractAddress = micropaymentsInstance.options.address;
+            await fetchApi({ path: '/donor/donate', payload: { donation } });
+            return micropaymentsInstance.options.address;
+          };
+          const deploySmartContractPromise = deploySmartContract();
+          toast.promise(
+            deploySmartContractPromise,
+            {
+              pending: 'Deploying smart contract, please wait',
+              success: {
+                render({ data }) {
+                  // When the promise reject, data will contains the error
+                  return `Deployed smart contract with address ${data}`;
+                }
+              },
+              error: {
+                render({ data }) {
+                  // When the promise reject, data will contains the error
+                  return String(
+                    typeof data === 'object'
+                      ? (data as unknown as { message: string }).message ?? data
+                      : data
+                  );
+                }
+              }
+            },
+            { position: 'bottom-right' }
+          );
         })}
       >
         <Stack spacing={4}>
-          <Checkbox {...register('criteria')} value={'hasFamilyMember'}>
+          <Checkbox {...register('criteria')} value="hasFamilyMember">
             Has a family fember
           </Checkbox>
           <Checkbox
             {...register('criteria')}
-            value={'homelessSinceMoreThan3Months'}
+            value="homelessSinceMoreThan3Months"
           >
             Homeless since more than three months
           </Checkbox>
@@ -94,7 +162,8 @@ export default function DonorForm() {
 
           <Input
             type="number"
-            placeholder="Amount (Crypto)"
+            placeholder="Amount (ETH)"
+            step="0.00000001"
             {...register('amount', { required: true })}
           />
         </Stack>
